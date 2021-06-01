@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PlayCommand.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -24,7 +24,7 @@ namespace VoiceChatManager.Commands
         /// <summary>
         /// The extension of converted files through this command.
         /// </summary>
-        public const string ConvertedFileExtension = ".wav";
+        public const string ConvertedFileExtension = ".raw";
 
         private PlayCommand()
         {
