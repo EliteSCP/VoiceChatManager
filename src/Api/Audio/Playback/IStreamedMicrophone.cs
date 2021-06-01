@@ -21,7 +21,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// <summary>
         /// Gets the microphone capture status.
         /// </summary>
-        MicrophoneStatusType Status { get; }
+        CaptureStatusType Status { get; }
 
         /// <summary>
         /// Gets the streamed microphone priority over other source of audio in the same channel.

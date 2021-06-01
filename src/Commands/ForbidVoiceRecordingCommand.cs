@@ -51,11 +51,14 @@ namespace VoiceChatManager.Commands
 
             player.SessionVariables.Remove("canBeVoiceRecorded");
 
-            if (!player.TryGet(out SamplePlaybackComponent samplePlaybackComponent) || !VoiceChatManager.Instance.Capture.Recorders.TryRemove(samplePlaybackComponent, out var _))
+            if (!player.TryGet(out SamplePlaybackComponent samplePlaybackComponent)
+                || !VoiceChatManager.Instance.Capture.Recorders.TryRemove(samplePlaybackComponent, out var voiceChatRecorder))
             {
                 response = "An error has occurred! You cannot be removed from the list of voice recorded players!";
                 return true;
             }
+
+            voiceChatRecorder.Dispose();
 
             VoiceChatManager.Instance.Gdpr.CanBeVoiceRecordedPlayerUserIds?.Remove(player.UserId);
             VoiceChatManager.Instance.Gdpr.Save();

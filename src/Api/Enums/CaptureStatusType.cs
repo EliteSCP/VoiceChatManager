@@ -1,5 +1,5 @@
-﻿// -----------------------------------------------------------------------
-// <copyright file="MicrophoneStatusType.cs" company="iopietro">
+// -----------------------------------------------------------------------
+// <copyright file="CaptureStatusType.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
 // </copyright>
@@ -8,22 +8,22 @@
 namespace VoiceChatManager.Api.Enums
 {
     /// <summary>
-    /// Microphone status types.
+    /// Capture status types.
     /// </summary>
-    public enum MicrophoneStatusType
+    public enum CaptureStatusType
     {
         /// <summary>
-        /// The microphone capture is stopped.
+        /// The audio capture is stopped.
         /// </summary>
         Stopped,
 
         /// <summary>
-        /// The microphone is being captured.
+        /// The audio capture is captured.
         /// </summary>
         Playing,
 
         /// <summary>
-        /// The microphone capture is stopped.
+        /// The audio capture is paused.
         /// </summary>
         Paused,
     }

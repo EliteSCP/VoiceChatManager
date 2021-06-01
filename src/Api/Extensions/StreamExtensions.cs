@@ -51,7 +51,7 @@ namespace VoiceChatManager.Api.Extensions
         /// <param name="status">The streamed microphone status.</param>
         /// <param name="streamedMicrophone">The streamed microphone to get.</param>
         /// <returns>Returns true if the file is found, false otherwise.</returns>
-        public static bool TryGet(this string id, MicrophoneStatusType status, out IStreamedMicrophone streamedMicrophone)
+        public static bool TryGet(this string id, CaptureStatusType status, out IStreamedMicrophone streamedMicrophone)
         {
             id.TryGet(status, out IEnumerable<IStreamedMicrophone> streamedMicrophones);
 
@@ -81,7 +81,7 @@ namespace VoiceChatManager.Api.Extensions
         /// <param name="status">The streamed microphones status.</param>
         /// <param name="streamedMicrophones">The <see cref="IEnumerable{T}"/> of <see cref="IStreamedMicrophone"/> to get.</param>
         /// <returns>Returns true if the file is found, false otherwise.</returns>
-        public static bool TryGet(this string id, MicrophoneStatusType status, out IEnumerable<IStreamedMicrophone> streamedMicrophones)
+        public static bool TryGet(this string id, CaptureStatusType status, out IEnumerable<IStreamedMicrophone> streamedMicrophones)
         {
             id.TryGet(out streamedMicrophones);
 
@@ -98,7 +98,7 @@ namespace VoiceChatManager.Api.Extensions
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false if the audio is getting converted.</returns>
         public static bool TryPlay(this int id, float volume, string channelName, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != MicrophoneStatusType.Playing)
+            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != CaptureStatusType.Playing)
             {
                 streamedMicrophone.ChannelName = channelName;
                 streamedMicrophone.Volume = volume;
@@ -120,7 +120,7 @@ namespace VoiceChatManager.Api.Extensions
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false it's already playing or the id isn't valid.</returns>
         public static bool TryPlayInCache(this string id, float volume, string channelName, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(MicrophoneStatusType.Paused, out streamedMicrophone) || id.TryGet(MicrophoneStatusType.Stopped, out streamedMicrophone))
+            if (id.TryGet(CaptureStatusType.Paused, out streamedMicrophone) || id.TryGet(CaptureStatusType.Stopped, out streamedMicrophone))
             {
                 streamedMicrophone.ChannelName = channelName;
                 streamedMicrophone.Volume = volume;
@@ -144,7 +144,7 @@ namespace VoiceChatManager.Api.Extensions
             if (id.TryPlayInCache(volume, channelName, out streamedMicrophone))
                 return true;
 
-            if (!id.TryGet(MicrophoneStatusType.Playing, out streamedMicrophone) &&
+            if (!id.TryGet(CaptureStatusType.Playing, out streamedMicrophone) &&
                 (File.Exists(id) || (VoiceChatManager.Instance.Config.Presets.TryGetValue(id, out id) && File.Exists(id))))
             {
                 return TryPlay(File.OpenRead(id), volume, channelName, out streamedMicrophone);
@@ -167,7 +167,7 @@ namespace VoiceChatManager.Api.Extensions
             if (id.TryPlayInCache(volume, channelName, out streamedMicrophone))
                 return true;
 
-            if (!id.TryGet(MicrophoneStatusType.Playing, out streamedMicrophone) &&
+            if (!id.TryGet(CaptureStatusType.Playing, out streamedMicrophone) &&
                 (File.Exists(id) || (VoiceChatManager.Instance.Config.Presets.TryGetValue(id, out id) && File.Exists(id))))
             {
                 return TryPlay(File.OpenRead(id), position, volume, channelName, out streamedMicrophone);
@@ -190,7 +190,7 @@ namespace VoiceChatManager.Api.Extensions
             if (id.TryPlayInCache(volume, channelName, out streamedMicrophone))
                 return true;
 
-            if (!id.TryGet(MicrophoneStatusType.Playing, out streamedMicrophone) &&
+            if (!id.TryGet(CaptureStatusType.Playing, out streamedMicrophone) &&
                 (File.Exists(id) || (VoiceChatManager.Instance.Config.Presets.TryGetValue(id, out id) && File.Exists(id))))
             {
                 return TryPlay(File.OpenRead(id), player, volume, channelName, out streamedMicrophone);
@@ -275,7 +275,7 @@ namespace VoiceChatManager.Api.Extensions
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> stopped from capturing the audio, false otherwise.</returns>
         public static bool TryStop(this int id, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != MicrophoneStatusType.Stopped)
+            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != CaptureStatusType.Stopped)
             {
                 streamedMicrophone.StopCapture();
                 return true;
@@ -293,7 +293,7 @@ namespace VoiceChatManager.Api.Extensions
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> stopped from capturing the audio, false otherwise.</returns>
         public static bool TryStop(this string id, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != MicrophoneStatusType.Stopped)
+            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != CaptureStatusType.Stopped)
             {
                 streamedMicrophone.StopCapture();
                 return true;
@@ -314,7 +314,7 @@ namespace VoiceChatManager.Api.Extensions
 
             foreach (var streamedMicrophone in streamedMicrophones)
             {
-                if (streamedMicrophone.Status != MicrophoneStatusType.Stopped)
+                if (streamedMicrophone.Status != CaptureStatusType.Stopped)
                 {
                     streamedMicrophone.StopCapture();
                     stopped++;
@@ -332,7 +332,7 @@ namespace VoiceChatManager.Api.Extensions
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> paused from capturing the audio, false otherwise.</returns>
         public static bool TryPause(this int id, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status == MicrophoneStatusType.Playing)
+            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status == CaptureStatusType.Playing)
             {
                 streamedMicrophone.PauseCapture();
                 return true;
@@ -350,7 +350,7 @@ namespace VoiceChatManager.Api.Extensions
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> paused from capturing the audio, false otherwise.</returns>
         public static bool TryPause(this string id, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status == MicrophoneStatusType.Playing)
+            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status == CaptureStatusType.Playing)
             {
                 streamedMicrophone.PauseCapture();
                 return true;
@@ -371,7 +371,7 @@ namespace VoiceChatManager.Api.Extensions
 
             foreach (var streamedMicrophone in streamedMicrophones)
             {
-                if (streamedMicrophone.Status == MicrophoneStatusType.Playing)
+                if (streamedMicrophone.Status == CaptureStatusType.Playing)
                 {
                     streamedMicrophone.PauseCapture();
                     paused++;

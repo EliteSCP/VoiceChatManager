@@ -11,6 +11,7 @@ namespace VoiceChatManager.Api.Audio.Capture
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Api.Extensions;
     using NAudio.Wave;
 
     /// <summary>
@@ -32,9 +33,9 @@ namespace VoiceChatManager.Api.Audio.Capture
         /// Initializes a new instance of the <see cref="CustomWaveWriter"/> class.
         /// </summary>
         /// <param name="filename">The file name.</param>
-        /// <param name="format">The audio <see cref="WaveFormat"/>.</param>
-        public CustomWaveWriter(string filename, WaveFormat format)
-            : base(filename, format)
+        /// <param name="waveFormat">The audio <see cref="WaveFormat"/>.</param>
+        public CustomWaveWriter(string filename, WaveFormat waveFormat)
+            : base(filename.GetValidFilePath(".wav"), waveFormat)
         {
         }
 

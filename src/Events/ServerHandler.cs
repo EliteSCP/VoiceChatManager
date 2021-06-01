@@ -7,6 +7,8 @@
 
 namespace VoiceChatManager.Events
 {
+    using System;
+    using System.IO;
     using Api.Audio.Capture;
     using Api.Extensions;
     using Dissonance;
@@ -22,6 +24,11 @@ namespace VoiceChatManager.Events
     /// </summary>
     internal sealed class ServerHandler
     {
+        /// <summary>
+        /// Gets the actual round name.
+        /// </summary>
+        public string RoundName { get; private set; }
+
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnReloadedConfigs"/>
         public void OnReloadedConfigs()
         {
@@ -39,7 +46,15 @@ namespace VoiceChatManager.Events
                     {
                         player.SessionVariables["canBeVoiceRecorded"] = true;
 
-                        if (!player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryAdd(playbackComponent, new VoiceChatRecorder(new WaveFormat(Instance.Config.Recorder.SampleRate, 1), player)))
+                        var waveFormat = new WaveFormat(Instance.Config.Recorder.SampleRate, 1);
+                        var voiceChatRecorder = new VoiceChatRecorder(
+                            player,
+                            waveFormat,
+                            Path.Combine(Instance.Config.Recorder.RootDirectoryPath, RoundName),
+                            Instance.Config.Recorder.DateTimeFormat,
+                            Instance.Config.Recorder.MinimumBytesToWrite);
+
+                        if (!player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryAdd(playbackComponent, voiceChatRecorder))
                         {
                             Log.Debug($"Failed to add {player} ({player.UserId}) to the list of voice recorded players!", Instance.Config.IsDebugEnabled);
                             continue;
@@ -49,11 +64,13 @@ namespace VoiceChatManager.Events
                     }
                     else
                     {
-                        if (!player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryRemove(playbackComponent, out _))
+                        if (!player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryRemove(playbackComponent, out var voiceChatRecorder))
                         {
                             Log.Debug($"Failed to remove {player} ({player.UserId}) from the list of voice recorded players!", Instance.Config.IsDebugEnabled);
                             continue;
                         }
+
+                        voiceChatRecorder.Dispose();
 
                         player.SessionVariables.Remove("canBeVoiceRecorded");
                     }
@@ -75,6 +92,11 @@ namespace VoiceChatManager.Events
             }
 
             Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
+
+            RoundName = $"Round {DateTime.Now.ToString(Instance.Config.Recorder.DateTimeFormat)}";
         }
+
+        /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRestartingRound"/>
+        public void OnRestartingRound() => Instance.Capture.Clear();
     }
 }

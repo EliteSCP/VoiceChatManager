@@ -35,18 +35,23 @@ namespace VoiceChatManager.Api.Audio.Capture
         int ReadBufferSize { get; }
 
         /// <summary>
-        /// Gets the voice data read interval in milliseconds.
+        /// Gets the voice data read interval, in milliseconds.
         /// </summary>
         int ReadInterval { get; }
 
         /// <summary>
-        /// Starts the voice recording.
+        /// Clears the voice chat capture.
+        /// </summary>
+        void Clear();
+
+        /// <summary>
+        /// Starts the voice capture.
         /// </summary>
         /// <returns>Returns a <see cref="Task"/>.</returns>
         Task StartAsync();
 
         /// <summary>
-        /// Starts the voice recording.
+        /// Starts the voice capture.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> to cancel the <see cref="Task"/> with.</param>
         /// <returns>Returns a <see cref="Task"/>.</returns>

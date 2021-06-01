@@ -7,6 +7,7 @@
 
 namespace VoiceChatManager.Events
 {
+    using System.IO;
     using Api.Audio.Capture;
     using Api.Extensions;
     using Dissonance.Audio.Playback;
@@ -34,7 +35,15 @@ namespace VoiceChatManager.Events
             {
                 ev.Player.SessionVariables["canBeVoiceRecorded"] = true;
 
-                if (!Instance.Capture.Recorders.TryAdd(samplePlaybackComponent, new VoiceChatRecorder(new WaveFormat(Instance.Config.Recorder.SampleRate, 1), ev.Player)))
+                var waveFormat = new WaveFormat(Instance.Config.Recorder.SampleRate, 1);
+                var voiceChatRecorder = new VoiceChatRecorder(
+                    ev.Player,
+                    waveFormat,
+                    Path.Combine(Instance.Config.Recorder.RootDirectoryPath, Instance.ServerHandler.RoundName),
+                    Instance.Config.Recorder.DateTimeFormat,
+                    Instance.Config.Recorder.MinimumBytesToWrite);
+
+                if (!Instance.Capture.Recorders.TryAdd(samplePlaybackComponent, voiceChatRecorder))
                     Log.Debug($"Failed to add {ev.Player} ({ev.Player.UserId}) to the list of voice recorded players!", Instance.Config.IsDebugEnabled);
             }
         }
@@ -42,8 +51,13 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Player.OnDestroying(DestroyingEventArgs)"/>
         public void OnDestroying(DestroyingEventArgs ev)
         {
-            if (!ev.Player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryRemove(playbackComponent, out _))
+            if (!ev.Player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryRemove(playbackComponent, out var voiceChatRecorder))
+            {
                 Log.Debug($"Failed to remove {ev.Player} ({ev.Player.UserId}) from the list of voice recorded players!", Instance.Config.IsDebugEnabled);
+                return;
+            }
+
+            voiceChatRecorder.Dispose();
         }
     }
 }

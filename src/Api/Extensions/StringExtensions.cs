@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="StringExtensions.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -90,6 +90,28 @@ namespace VoiceChatManager.Api.Extensions
             Log.Debug($"Converted \"{path}\" successfully in {result.Duration}, with {result.Arguments} as arguments, starting time: {result.StartTime}, ending time: {result.EndTime}.");
 
             return result;
+        }
+
+        /// <summary>
+        /// Gets a valid file name, creating all folders if necessary.
+        /// </summary>
+        /// <param name="path">The file path to be validated.</param>
+        /// <param name="extension">The optional extension to append at the end of the filename.</param>
+        /// <returns>Returns the validated filename.</returns>
+        public static string GetValidFilePath(this string path, string extension = null)
+        {
+            if (string.IsNullOrEmpty(path))
+                return string.Empty;
+
+            var directoryPath = Path.GetDirectoryName(path);
+
+            if (!Directory.Exists(directoryPath))
+                Directory.CreateDirectory(directoryPath);
+
+            if (!string.IsNullOrEmpty(extension) && !path.EndsWith(extension))
+                path += extension;
+
+            return path;
         }
     }
 }

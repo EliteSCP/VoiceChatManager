@@ -8,7 +8,9 @@
 namespace VoiceChatManager.Configs
 {
     using System.ComponentModel;
+    using System.IO;
     using Api.Audio.Capture;
+    using Exiled.API.Features;
 
     /// <summary>
     /// <see cref="IVoiceChatRecorder"/> related configs.
@@ -18,25 +20,33 @@ namespace VoiceChatManager.Configs
         /// <summary>
         /// Gets a value indicating whether the <see cref="VoiceChatRecorder"/> is enabled or not.
         /// </summary>
-        [Description("indicates whether the voice chat recorder is enabled or not")]
+        [Description("indicates whether the voice chat recorder is enabled or not.")]
         public bool IsEnabled { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="IVoiceChatRecorder"/> sample rate.
         /// </summary>
-        [Description("The voice chat recorder sample rate")]
+        [Description("The voice chat recorder sample rate.")]
         public int SampleRate { get; private set; } = 48000;
 
-        /// <summary>
-        /// Gets the <see cref="IVoiceChatCapture.ReadBufferSize"/>, in bytes.
-        /// </summary>
-        [Description("The voice chat recorder read buffer size, in bytes, minimum is 960")]
+        /// <inheritdoc cref="IVoiceChatCapture.ReadBufferSize"/>
+        [Description("The voice chat recorder read buffer size, in bytes, minimum is 960.")]
         public int ReadBufferSize { get; private set; } = 1920;
 
-        /// <summary>
-        /// Gets the <see cref="IVoiceChatCapture.ReadInterval"/>, in milliseconds.
-        /// </summary>
-        [Description("The voice chat recorder read interval, in milliseconds, minimum is 20")]
+        /// <inheritdoc cref="IVoiceChatCapture.ReadInterval"/>
+        [Description("The voice chat recorder read interval, in milliseconds, minimum is 20.")]
         public int ReadInterval { get; private set; } = 40;
+
+        /// <inheritdoc cref="IVoiceChatRecorder.RootDirectoryPath"/>
+        [Description("The root directory path, at which audio files will be saved.")]
+        public string RootDirectoryPath { get; private set; } = Path.Combine(Paths.Plugins, "VoiceChatManager", "Recordings");
+
+        /// <inheritdoc cref="IVoiceChatRecorder.DateTimeFormat"/>
+        [Description("The date time format that will be written in the file name")]
+        public string DateTimeFormat { get; private set; } = "dd-MM-yy HH.mm.ss.fff";
+
+        /// <inheritdoc cref="IVoiceChatRecorder.MinimumBytesToWrite"/>
+        [Description("The minimum number of bytes required to write the audio, minimum is the read buffer size.")]
+        public int MinimumBytesToWrite { get; private set; } = 48000;
     }
 }

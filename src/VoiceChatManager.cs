@@ -86,6 +86,7 @@ namespace VoiceChatManager
 
             Exiled.Events.Handlers.Server.ReloadedConfigs += ServerHandler.OnReloadedConfigs;
             Exiled.Events.Handlers.Server.WaitingForPlayers += ServerHandler.OnWaitingForPlayers;
+            Exiled.Events.Handlers.Server.RestartingRound += ServerHandler.OnRestartingRound;
 
             harmonyInstance = new Harmony($"voicechatmanager.scpsl.{DateTime.Now.Ticks}");
             harmonyInstance.PatchAll();
@@ -106,6 +107,7 @@ namespace VoiceChatManager
 
             Exiled.Events.Handlers.Server.ReloadedConfigs -= ServerHandler.OnReloadedConfigs;
             Exiled.Events.Handlers.Server.WaitingForPlayers -= ServerHandler.OnWaitingForPlayers;
+            Exiled.Events.Handlers.Server.RestartingRound -= ServerHandler.OnRestartingRound;
 
             harmonyInstance.UnpatchAll();
             harmonyInstance = null;

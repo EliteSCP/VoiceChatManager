@@ -20,9 +20,9 @@ namespace VoiceChatManager.Api.Audio.Capture
     public interface IVoiceChatRecorder : IDisposable
     {
         /// <summary>
-        /// Gets the audio <see cref="WaveFormat"/>, which contains the sample rate and number of channels.
+        /// Gets or sets the audio <see cref="WaveFormat"/>, which contains the sample rate and number of channels.
         /// </summary>
-        WaveFormat WaveFormat { get; }
+        WaveFormat WaveFormat { get; set; }
 
         /// <summary>
         /// Gets the <see cref="Exiled.API.Features.Player"/> who's been voice recorded.
@@ -30,10 +30,30 @@ namespace VoiceChatManager.Api.Audio.Capture
         Player Player { get; }
 
         /// <summary>
+        /// Gets or sets the root directory path, at which audio files will be saved.
+        /// </summary>
+        string RootDirectoryPath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="DateTime"/> format that will be written in the file name.
+        /// </summary>
+        /// <remarks>https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings .</remarks>
+        string DateTimeFormat { get; set; }
+
+        /// <summary>
+        /// Gets or sets the minimum number of bytes required to write the audio, minimum is the read buffer size.
+        /// </summary>
+        int MinimumBytesToWrite { get; set; }
+
+        /// <summary>
+        /// Gets the <see cref="CustomWaveWriter"/> instance.
+        /// </summary>
+        CustomWaveWriter Writer { get; }
+
+        /// <summary>
         /// Resets the internal <see cref="Stream"/>.
         /// </summary>
-        /// <param name="waveFormat">The new <see cref="WaveFormat"/> to be used.</param>
-        void Reset(WaveFormat waveFormat);
+        void Reset();
 
         /// <summary>
         /// Writes <see cref="Player"/>'s captured voice samples.

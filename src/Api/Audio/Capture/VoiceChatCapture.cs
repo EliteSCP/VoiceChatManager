@@ -8,7 +8,6 @@
 namespace VoiceChatManager.Api.Audio.Capture
 {
     using System;
-    using System.Buffers;
     using System.Collections.Concurrent;
     using System.Threading;
     using System.Threading.Tasks;
@@ -79,7 +78,20 @@ namespace VoiceChatManager.Api.Audio.Capture
         public int ReadInterval { get; }
 
         /// <inheritdoc/>
-        public void Dispose() => Dispose(true);
+        public void Clear()
+        {
+            foreach (var recorder in Recorders)
+                recorder.Value.Dispose();
+
+            Recorders.Clear();
+        }
+
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <inheritdoc/>
         public async Task StartAsync() => await StartAsync(default);
@@ -99,17 +111,13 @@ namespace VoiceChatManager.Api.Audio.Capture
         /// <param name="shouldDisposeAllResources">Indicates whether all resources should be disposed or only unmanaged ones.</param>
         protected virtual void Dispose(bool shouldDisposeAllResources)
         {
-            if (shouldDisposeAllResources)
-            {
-                foreach (var recorder in Recorders.Values)
-                    recorder.Dispose();
+            if (isDisposed)
+                return;
 
-                Recorders.Clear();
-            }
+            if (shouldDisposeAllResources)
+                Clear();
 
             isDisposed = true;
-
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -129,8 +137,8 @@ namespace VoiceChatManager.Api.Audio.Capture
                     if (!recorder.Key.HasActiveSession)
                         return;
 
-                    var samples = ArrayPool<float>.Shared.Rent(ReadBufferSize);
-                    var byteSamples = ArrayPool<byte>.Shared.Rent(ReadBufferSize * 4);
+                    var samples = new float[ReadBufferSize];
+                    var byteSamples = new byte[ReadBufferSize * 4];
 
                     try
                     {
@@ -146,11 +154,11 @@ namespace VoiceChatManager.Api.Audio.Capture
                     }
                     finally
                     {
-                        ArrayPool<float>.Shared.Return(samples, true);
-                        ArrayPool<byte>.Shared.Return(byteSamples, true);
-
                         if (!recorder.Key.HasActiveSession)
-                            recorder.Value.Reset(WaveFormat);
+                        {
+                            recorder.Value.WaveFormat = WaveFormat;
+                            recorder.Value.Reset();
+                        }
                     }
                 });
 

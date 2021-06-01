@@ -46,7 +46,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public static List<IStreamedMicrophone> List { get; private set; } = new List<IStreamedMicrophone>();
 
         /// <inheritdoc/>
-        public virtual MicrophoneStatusType Status { get; protected set; }
+        public virtual CaptureStatusType Status { get; protected set; }
 
         /// <inheritdoc/>
         public ChannelPriority Priority { get; protected set; }
@@ -139,7 +139,7 @@ namespace VoiceChatManager.Api.Audio.Playback
 
             Name = string.IsNullOrEmpty(name) ? Name : name;
             IsRecording = true;
-            Status = MicrophoneStatusType.Playing;
+            Status = CaptureStatusType.Playing;
 
             Log.Debug($"Stream of duration {Stream.GetDuration().ToString(Instance.Config.DurationFormat)} started. Microphone name: \"{name}\", is 3D: {(IsThreeDimensional ? "Yes" : "No")}, channel name: {ChannelName}, priority: {Priority}.");
 
@@ -150,7 +150,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public virtual void StopCapture()
         {
             IsRecording = false;
-            Status = MicrophoneStatusType.Stopped;
+            Status = CaptureStatusType.Stopped;
 
             Log.Debug($"Stream has been stopped at {Stream.Position.GetDuration().ToString(VoiceChatManager.Instance.Config.DurationFormat)}.", Instance.Config.IsDebugEnabled);
 
@@ -162,7 +162,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public virtual void PauseCapture()
         {
             IsRecording = false;
-            Status = MicrophoneStatusType.Paused;
+            Status = CaptureStatusType.Paused;
 
             Log.Debug($"Stream has been paused at {Stream.Position.GetDuration().ToString(VoiceChatManager.Instance.Config.DurationFormat)}.", Instance.Config.IsDebugEnabled);
         }

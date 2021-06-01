@@ -8,6 +8,7 @@
 namespace VoiceChatManager.Commands
 {
     using System;
+    using System.IO;
     using Api.Audio.Capture;
     using Api.Extensions;
     using CommandSystem;
@@ -65,7 +66,15 @@ namespace VoiceChatManager.Commands
 
                 samplePlaybackComponent.MultiplyBySource = false;
 
-                if (!VoiceChatManager.Instance.Capture.Recorders.TryAdd(samplePlaybackComponent, new VoiceChatRecorder(new WaveFormat(VoiceChatManager.Instance.Config.Recorder.SampleRate, 1), player)))
+                var waveFormat = new WaveFormat(VoiceChatManager.Instance.Config.Recorder.SampleRate, 1);
+                var voiceChatRecorder = new VoiceChatRecorder(
+                    player,
+                    waveFormat,
+                    Path.Combine(VoiceChatManager.Instance.Config.Recorder.RootDirectoryPath, VoiceChatManager.Instance.ServerHandler.RoundName),
+                    VoiceChatManager.Instance.Config.Recorder.DateTimeFormat,
+                    VoiceChatManager.Instance.Config.Recorder.MinimumBytesToWrite);
+
+                if (!VoiceChatManager.Instance.Capture.Recorders.TryAdd(samplePlaybackComponent, voiceChatRecorder))
                 {
                     response = "An error has occurred! You cannot be added to the list of voice recorded players!";
                     return true;

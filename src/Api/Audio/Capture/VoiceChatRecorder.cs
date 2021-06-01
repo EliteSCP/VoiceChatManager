@@ -8,6 +8,7 @@
 namespace VoiceChatManager.Api.Audio.Capture
 {
     using System;
+    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using Exiled.API.Features;
@@ -23,20 +24,58 @@ namespace VoiceChatManager.Api.Audio.Capture
         /// </summary>
         /// <param name="player"><inheritdoc cref="Player"/></param>
         public VoiceChatRecorder(Player player)
-            : this(new WaveFormat(48000, 1), player)
+            : this(player, new WaveFormat(48000, 1))
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VoiceChatRecorder"/> class.
         /// </summary>
-        /// <param name="waveFormat">The <see cref="VoiceChatCapture"/>.</param>
         /// <param name="player"><inheritdoc cref="Player"/></param>
-        public VoiceChatRecorder(WaveFormat waveFormat, Player player)
+        /// <param name="waveFormat"><inheritdoc cref="WaveFormat"/></param>
+        public VoiceChatRecorder(Player player, WaveFormat waveFormat)
+            : this(player, waveFormat, string.Empty)
         {
-            Reset(waveFormat);
+        }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VoiceChatRecorder"/> class.
+        /// </summary>
+        /// <param name="player"><inheritdoc cref="Player"/></param>
+        /// <param name="waveFormat"><inheritdoc cref="WaveFormat"/></param>
+        /// <param name="rootDirectoryPath"><inheritdoc cref="RootDirectoryPath"/></param>
+        public VoiceChatRecorder(Player player, WaveFormat waveFormat, string rootDirectoryPath)
+            : this(player, waveFormat, rootDirectoryPath, "dd-MM-yy-HH_mm_ss_fff")
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VoiceChatRecorder"/> class.
+        /// </summary>
+        /// <param name="player"><inheritdoc cref="Player"/></param>
+        /// <param name="waveFormat"><inheritdoc cref="WaveFormat"/></param>
+        /// <param name="rootDirectoryPath"><inheritdoc cref="RootDirectoryPath"/></param>
+        /// <param name="dateTimeFormat"><inheritdoc cref="DateTimeFormat"/></param>
+        public VoiceChatRecorder(Player player, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat)
+            : this(player, waveFormat, rootDirectoryPath, dateTimeFormat, 1920)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VoiceChatRecorder"/> class.
+        /// </summary>
+        /// <param name="waveFormat"><inheritdoc cref="WaveFormat"/></param>
+        /// <param name="player"><inheritdoc cref="Player"/></param>
+        /// <param name="rootDirectoryPath"><inheritdoc cref="RootDirectoryPath"/></param>
+        /// <param name="dateTimeFormat"><inheritdoc cref="DateTimeFormat"/></param>
+        /// <param name="minimumBytesToWrite"><inheritdoc cref="MinimumBytesToWrite"/></param>
+        public VoiceChatRecorder(Player player, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat, int minimumBytesToWrite)
+        {
+            WaveFormat = waveFormat;
             Player = player;
+            RootDirectoryPath = rootDirectoryPath;
+            DateTimeFormat = dateTimeFormat;
+            MinimumBytesToWrite = minimumBytesToWrite;
         }
 
         /// <summary>
@@ -45,26 +84,39 @@ namespace VoiceChatManager.Api.Audio.Capture
         ~VoiceChatRecorder() => Dispose(false);
 
         /// <inheritdoc/>
-        public WaveFormat WaveFormat { get; }
-
-        /// <summary>
-        /// Gets the <see cref="CustomWaveWriter"/> instance.
-        /// </summary>
-        public CustomWaveWriter Writer { get; private set; }
-
-        /// <inheritdoc/>
         public Player Player { get; }
 
         /// <inheritdoc/>
-        public void Reset(WaveFormat waveFormat)
-        {
-            Writer?.Dispose();
+        public WaveFormat WaveFormat { get; set; }
 
-            Writer = new CustomWaveWriter($@"C:\Users\Pietro\AppData\Roaming\EXILED\Plugins\{DateTime.Now.Ticks}.wav", waveFormat);
+        /// <inheritdoc/>
+        public string RootDirectoryPath { get; set; }
+
+        /// <inheritdoc/>
+        public string DateTimeFormat { get; set; }
+
+        /// <inheritdoc/>
+        public int MinimumBytesToWrite { get; set; }
+
+        /// <inheritdoc/>
+        public CustomWaveWriter Writer { get; private set; }
+
+        /// <inheritdoc/>
+        public void Reset()
+        {
+            if (Writer != null && Writer.Length < MinimumBytesToWrite)
+                return;
+
+            Writer?.Dispose();
+            Writer = null;
         }
 
         /// <inheritdoc/>
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         /// <inheritdoc/>
         public async ValueTask WriteAsync(ArraySegment<byte> samples) => await WriteAsync(samples, default);
@@ -75,6 +127,9 @@ namespace VoiceChatManager.Api.Audio.Capture
             if (isDisposed)
                 throw new ObjectDisposedException(nameof(VoiceChatRecorder));
 
+            if (Writer == null && Player != null && Player.GameObject != null)
+                Writer = new CustomWaveWriter(Path.Combine(RootDirectoryPath, $"{Player.Nickname} ({Player.UserId})", $"({Player.Id}) [{Player.Role}] {DateTime.Now.ToString(DateTimeFormat)}"), WaveFormat);
+
             await Writer.WriteSamplesAsync(samples);
         }
 
@@ -84,15 +139,16 @@ namespace VoiceChatManager.Api.Audio.Capture
         /// <param name="shouldDisposeAllResources">Indicates whether all resources should be disposed or only unmanaged ones.</param>
         protected virtual void Dispose(bool shouldDisposeAllResources)
         {
+            if (isDisposed)
+                return;
+
             if (shouldDisposeAllResources)
             {
-                Writer.Dispose();
+                Writer?.Dispose();
                 Writer = null;
             }
 
             isDisposed = true;
-
-            GC.SuppressFinalize(this);
         }
     }
 }
