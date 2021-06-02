@@ -83,7 +83,7 @@ namespace VoiceChatManager.Commands
                     {
                         var newArguments = new List<string>(arguments)
                         {
-                            [2] = path + ConvertedFileExtension,
+                            [0] = path + ConvertedFileExtension,
                         };
 
                         var isSucceded = Execute(new ArraySegment<string>(newArguments.ToArray()), sender, out var otherResponse);
