@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="StreamedMicrophone.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -223,7 +223,6 @@ namespace VoiceChatManager.Api.Audio.Playback
         public void Dispose()
         {
             StopCapture();
-
             Dispose(true);
         }
 

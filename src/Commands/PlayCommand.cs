@@ -10,6 +10,8 @@ namespace VoiceChatManager.Commands
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Api.Extensions;
     using CommandSystem;
     using Exiled.API.Features;
@@ -73,17 +75,20 @@ namespace VoiceChatManager.Commands
             if (!VoiceChatManager.Instance.Config.Presets.TryGetValue(arguments.At(0), out var path))
                 path = arguments.At(0);
 
-            if (File.Exists(path) && !path.EndsWith(ConvertedFileExtension) && !File.Exists(path + ConvertedFileExtension))
+            var convertedFilePath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path)) + ConvertedFileExtension;
+
+            if (File.Exists(path) && !path.EndsWith(ConvertedFileExtension) && !File.Exists(convertedFilePath))
             {
                 response = $"Converting \"{path}\"...";
 
-                path.ConvertFileAsync().ContinueWith(task =>
+                path.ConvertFileAsync().ContinueWith(
+                    task =>
                 {
                     if (task.IsCompleted)
                     {
                         var newArguments = new List<string>(arguments)
                         {
-                            [0] = path + ConvertedFileExtension,
+                            [0] = convertedFilePath,
                         };
 
                         var isSucceded = Execute(new ArraySegment<string>(newArguments.ToArray()), sender, out var otherResponse);
@@ -94,7 +99,7 @@ namespace VoiceChatManager.Commands
                     {
                         Log.Error($"Failed to convert \"{path}\": {task.Exception}");
                     }
-                });
+                }, TaskContinuationOptions.ExecuteSynchronously);
 
                 return true;
             }
@@ -106,7 +111,7 @@ namespace VoiceChatManager.Commands
             }
 
             if (!path.EndsWith(ConvertedFileExtension))
-                path += ConvertedFileExtension;
+                path = convertedFilePath;
 
             if (arguments.Count == 2 || arguments.Count == 3)
             {

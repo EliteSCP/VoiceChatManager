@@ -127,6 +127,10 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnWaitingForPlayers"/>
         public void OnWaitingForPlayers()
         {
+            // It doesn't get invoked by Exiled
+            if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
+                OnReloadedConfigs();
+
             var roundsCounter = PlayerStats.UptimeRounds - 1;
 
             if (Instance.Config.Recorder.IsEnabled
@@ -137,10 +141,6 @@ namespace VoiceChatManager.Events
                 if (Directory.Exists(Instance.Config.Recorder.RootDirectoryPath))
                     Directory.Delete(Instance.Config.Recorder.RootDirectoryPath, true);
             }
-
-            // It doesn't get invoked by Exiled
-            if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
-                OnReloadedConfigs();
 
             Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
 
