@@ -9,14 +9,12 @@ namespace VoiceChatManager
 {
     using System;
     using System.Threading;
-    using System.Threading.Tasks;
     using Api.Audio.Capture;
     using Api.Utilities;
     using Configs;
     using Events;
     using Exiled.API.Features;
     using HarmonyLib;
-    using NAudio.Wave;
 
     /// <summary>
     /// Plays audio files in game.
