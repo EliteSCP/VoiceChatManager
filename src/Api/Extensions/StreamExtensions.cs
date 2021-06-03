@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="StreamExtensions.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -95,7 +95,7 @@ namespace VoiceChatManager.Api.Extensions
         /// <param name="volume">The <see cref="IStreamedMicrophone"/> volume.</param>
         /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be played.</param>
-        /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false if the audio is getting converted.</returns>
+        /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false otherwise.</returns>
         public static bool TryPlay(this int id, float volume, string channelName, out IStreamedMicrophone streamedMicrophone)
         {
             if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != CaptureStatusType.Playing)

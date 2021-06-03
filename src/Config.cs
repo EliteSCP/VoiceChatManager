@@ -35,6 +35,12 @@ namespace VoiceChatManager
         public Recorder Recorder { get; private set; } = new Recorder();
 
         /// <summary>
+        /// Gets <see cref="IAudioConverter"/> related configs.
+        /// </summary>
+        [Description("Voice chat audio converter related configs")]
+        public Converter Converter { get; private set; } = new Converter();
+
+        /// <summary>
         /// Gets a dictionary of preset audios, key is the name, value is the path.
         /// </summary>
         [Description("A dictionary of audio presets with their name as key and path as value")]

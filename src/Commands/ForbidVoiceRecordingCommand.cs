@@ -29,9 +29,7 @@ namespace VoiceChatManager.Commands
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            var asd = true;
-
-            if (!VoiceChatManager.Instance.Gdpr.ShouldBeRespected || !asd)
+            if (!VoiceChatManager.Instance.Gdpr.ShouldBeRespected || !VoiceChatManager.Instance.Config.Recorder.IsEnabled)
             {
                 response = "Command is currently disabled.";
                 return false;

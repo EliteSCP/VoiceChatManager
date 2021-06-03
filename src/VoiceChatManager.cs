@@ -68,15 +68,17 @@ namespace VoiceChatManager
         {
             CachedProperties.MaximumVoiceChatDesync = TimeSpan.FromSeconds(60);
 
-            CaptureCancellationTokenSource = new CancellationTokenSource();
-
             PlayerHandler = new PlayerHandler();
             ServerHandler = new ServerHandler();
             Gdpr = new Gdpr();
             Capture = new VoiceChatCapture(new WaveFormat(Instance.Config.Recorder.SampleRate, 1), Config.Recorder.ReadBufferSize, Config.Recorder.ReadInterval);
 
             if (Config.Recorder.IsEnabled)
+            {
+                CaptureCancellationTokenSource = new CancellationTokenSource();
+
                 Task.Run(() => Capture.StartAsync(CaptureCancellationTokenSource.Token), CaptureCancellationTokenSource.Token);
+            }
 
             // It doesn't get invoked by Exiled
             ServerHandler.OnReloadedConfigs();

@@ -33,7 +33,15 @@ namespace VoiceChatManager.Events
         public void OnReloadedConfigs()
         {
             if (!string.IsNullOrEmpty(Instance.Config.FFmpegDirectoryPath))
+            {
                 FFmpeg.SetExecutablesPath(Instance.Config.FFmpegDirectoryPath);
+            }
+            else if (Instance.Config.Converter.IsEnabled)
+            {
+                Log.Warn($"Audio converter cannot be enabled, ffmpeg wasn't found at \"{Instance.Config.FFmpegDirectoryPath}\"");
+
+                Instance.Config.Converter.IsEnabled = false;
+            }
 
             Instance.Gdpr.Load();
 
@@ -46,13 +54,23 @@ namespace VoiceChatManager.Events
                     {
                         player.SessionVariables["canBeVoiceRecorded"] = true;
 
-                        var waveFormat = new WaveFormat(Instance.Config.Recorder.SampleRate, 1);
+                        var audioConverter = Instance.Config.Converter.IsEnabled ?
+                            new AudioConverter(
+                                new WaveFormat(Instance.Config.Converter.SampleRate, Instance.Config.Converter.Channels),
+                                Instance.Config.Converter.FileFormat,
+                                Instance.Config.Converter.Speed,
+                                Instance.Config.Converter.Bitrate,
+                                Instance.Config.Converter.ShouldDeleteAfterConversion,
+                                Instance.Config.Converter.Preset)
+                            : null;
+
                         var voiceChatRecorder = new VoiceChatRecorder(
                             player,
-                            waveFormat,
+                            new WaveFormat(Instance.Config.Recorder.SampleRate, 1),
                             Path.Combine(Instance.Config.Recorder.RootDirectoryPath, RoundName),
                             Instance.Config.Recorder.DateTimeFormat,
-                            Instance.Config.Recorder.MinimumBytesToWrite);
+                            Instance.Config.Recorder.MinimumBytesToWrite,
+                            audioConverter);
 
                         if (!player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryAdd(playbackComponent, voiceChatRecorder))
                         {
@@ -85,11 +103,20 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnWaitingForPlayers"/>
         public void OnWaitingForPlayers()
         {
-            if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
+            var roundsCounter = PlayerStats.UptimeRounds - 1;
+
+            if (Instance.Config.Recorder.IsEnabled
+                && Instance.Config.Recorder.DeleteEveryNumberOfRounds > 0
+                && roundsCounter > 0
+                && roundsCounter % Instance.Config.Recorder.DeleteEveryNumberOfRounds == 0)
             {
-                // It doesn't get invoked by Exiled
-                OnReloadedConfigs();
+                if (Directory.Exists(Instance.Config.Recorder.RootDirectoryPath))
+                    Directory.Delete(Instance.Config.Recorder.RootDirectoryPath, true);
             }
+
+            // It doesn't get invoked by Exiled
+            if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
+                OnReloadedConfigs();
 
             Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
 

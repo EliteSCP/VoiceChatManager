@@ -8,9 +8,7 @@
 namespace VoiceChatManager.Api.Extensions
 {
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
-    using Exiled.API.Features;
     using Xabe.FFmpeg;
 
     /// <summary>
@@ -68,28 +66,26 @@ namespace VoiceChatManager.Api.Extensions
         /// <param name="channels">The converted audio channels.</param>
         /// <param name="speed">The converted audio speed.</param>
         /// <param name="format">The converted audio format.</param>
+        /// <param name="preset">The conversion preset, faster speed causes worse optimization and quality.</param>
         /// <param name="canOverwriteOutput">Indicates whether the output file can be overwritten or not.</param>
+        /// <param name="extraParameters">The extra parameters used for the conversion, null if none.</param>
         /// <returns>Returns a <see cref="Task{TResult}"/>.</returns>
-        public static async Task<IConversionResult> ConvertFileAsync(this string path, int sampleRate = 48000, int channels = 1, float speed = 1, Format format = Format.f32le, bool canOverwriteOutput = true)
+        public static async Task<IConversionResult> ConvertFileAsync(this string path, int sampleRate = 48000, int channels = 1, float speed = 1, Format format = Format.f32le, ConversionPreset preset = ConversionPreset.Medium, bool canOverwriteOutput = true, string extraParameters = null)
         {
-            Log.Debug($"Converting \"{path}\"", VoiceChatManager.Instance.Config.IsDebugEnabled);
+            if (!File.Exists(path))
+                throw new FileNotFoundException(null, path);
 
-            var audioStream = (await FFmpeg.GetMediaInfo(path))?.AudioStreams?.FirstOrDefault();
-
-            if (audioStream == null)
-                throw new InvalidDataException($"File \"{path}\" doesn't contain audio tracks!");
-
-            var result = await FFmpeg.Conversions.New()
-                .AddStream(audioStream)
-                .AddParameter($"-ar {sampleRate} -ac {channels} -filter:a \"atempo = {speed}\"")
-                .SetOutput($"{path}.raw")
+            var conversion = FFmpeg.Conversions.New()
+                .AddParameter($"-i \"{path}\" -ar {sampleRate} -ac {channels} -filter:a \"atempo = {speed}\"", ParameterPosition.PreInput)
+                .SetOutput($"{Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path))}.{format}")
                 .SetOutputFormat(format)
                 .SetOverwriteOutput(canOverwriteOutput)
-                .Start();
+                .SetPreset(preset);
 
-            Log.Debug($"Converted \"{path}\" successfully in {result.Duration}, with {result.Arguments} as arguments, starting time: {result.StartTime}, ending time: {result.EndTime}.");
+            if (!string.IsNullOrEmpty(extraParameters))
+                conversion.AddParameter(extraParameters);
 
-            return result;
+            return await conversion.Start();
         }
 
         /// <summary>

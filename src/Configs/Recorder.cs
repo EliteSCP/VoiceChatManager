@@ -11,17 +11,18 @@ namespace VoiceChatManager.Configs
     using System.IO;
     using Api.Audio.Capture;
     using Exiled.API.Features;
+    using Exiled.API.Interfaces;
 
     /// <summary>
     /// <see cref="IVoiceChatRecorder"/> related configs.
     /// </summary>
-    public sealed class Recorder
+    public sealed class Recorder : IConfig
     {
         /// <summary>
-        /// Gets a value indicating whether the <see cref="VoiceChatRecorder"/> is enabled or not.
+        /// Gets or sets a value indicating whether the <see cref="IVoiceChatRecorder"/> is enabled or not.
         /// </summary>
-        [Description("indicates whether the voice chat recorder is enabled or not.")]
-        public bool IsEnabled { get; private set; }
+        [Description("Indicates whether the voice chat recorder is enabled or not.")]
+        public bool IsEnabled { get; set; }
 
         /// <summary>
         /// Gets the <see cref="IVoiceChatRecorder"/> sample rate.
@@ -47,6 +48,12 @@ namespace VoiceChatManager.Configs
 
         /// <inheritdoc cref="IVoiceChatRecorder.MinimumBytesToWrite"/>
         [Description("The minimum number of bytes required to write the audio, minimum is the read buffer size.")]
-        public int MinimumBytesToWrite { get; private set; } = 48000;
+        public int MinimumBytesToWrite { get; private set; } = 192000;
+
+        /// <summary>
+        /// Gets the number of rounds which have to pass to delete all audio files, 0 means disabled.
+        /// </summary>
+        [Description("Deletes audio files every number of rounds. Set it 0 to disable.")]
+        public ushort DeleteEveryNumberOfRounds { get; private set; } = 0;
     }
 }

@@ -46,6 +46,11 @@ namespace VoiceChatManager.Api.Audio.Capture
         int MinimumBytesToWrite { get; set; }
 
         /// <summary>
+        /// Gets the audio converter.
+        /// </summary>
+        IAudioConverter Converter { get; }
+
+        /// <summary>
         /// Gets the <see cref="CustomWaveWriter"/> instance.
         /// </summary>
         CustomWaveWriter Writer { get; }

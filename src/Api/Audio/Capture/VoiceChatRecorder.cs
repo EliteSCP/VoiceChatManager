@@ -70,12 +70,27 @@ namespace VoiceChatManager.Api.Audio.Capture
         /// <param name="dateTimeFormat"><inheritdoc cref="DateTimeFormat"/></param>
         /// <param name="minimumBytesToWrite"><inheritdoc cref="MinimumBytesToWrite"/></param>
         public VoiceChatRecorder(Player player, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat, int minimumBytesToWrite)
+            : this(player, waveFormat, rootDirectoryPath, dateTimeFormat, minimumBytesToWrite, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VoiceChatRecorder"/> class.
+        /// </summary>
+        /// <param name="waveFormat"><inheritdoc cref="WaveFormat"/></param>
+        /// <param name="player"><inheritdoc cref="Player"/></param>
+        /// <param name="rootDirectoryPath"><inheritdoc cref="RootDirectoryPath"/></param>
+        /// <param name="dateTimeFormat"><inheritdoc cref="DateTimeFormat"/></param>
+        /// <param name="minimumBytesToWrite"><inheritdoc cref="MinimumBytesToWrite"/></param>
+        /// <param name="converter"><inheritdoc cref="Converter"/></param>
+        public VoiceChatRecorder(Player player, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat, int minimumBytesToWrite, IAudioConverter converter)
         {
             WaveFormat = waveFormat;
             Player = player;
             RootDirectoryPath = rootDirectoryPath;
             DateTimeFormat = dateTimeFormat;
             MinimumBytesToWrite = minimumBytesToWrite;
+            Converter = converter;
         }
 
         /// <summary>
@@ -99,6 +114,9 @@ namespace VoiceChatManager.Api.Audio.Capture
         public int MinimumBytesToWrite { get; set; }
 
         /// <inheritdoc/>
+        public IAudioConverter Converter { get; }
+
+        /// <inheritdoc/>
         public CustomWaveWriter Writer { get; private set; }
 
         /// <inheritdoc/>
@@ -107,8 +125,13 @@ namespace VoiceChatManager.Api.Audio.Capture
             if (Writer != null && Writer.Length < MinimumBytesToWrite)
                 return;
 
+            var filename = Writer?.Filename;
+
             Writer?.Dispose();
             Writer = null;
+
+            if (Converter != null && !string.IsNullOrEmpty(filename))
+                Converter.StartAsync(filename);
         }
 
         /// <inheritdoc/>
@@ -144,8 +167,13 @@ namespace VoiceChatManager.Api.Audio.Capture
 
             if (shouldDisposeAllResources)
             {
+                var filename = Writer?.Filename;
+
                 Writer?.Dispose();
                 Writer = null;
+
+                if (Converter != null && !string.IsNullOrEmpty(filename))
+                    Converter.StartAsync(filename);
             }
 
             isDisposed = true;

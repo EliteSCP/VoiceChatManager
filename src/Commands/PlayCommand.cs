@@ -24,7 +24,7 @@ namespace VoiceChatManager.Commands
         /// <summary>
         /// The extension of converted files through this command.
         /// </summary>
-        public const string ConvertedFileExtension = ".raw";
+        public const string ConvertedFileExtension = ".f32le";
 
         private PlayCommand()
         {

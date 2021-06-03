@@ -32,9 +32,7 @@ namespace VoiceChatManager.Commands
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            var asd = true;
-
-            if (!VoiceChatManager.Instance.Gdpr.ShouldBeRespected || !asd)
+            if (!VoiceChatManager.Instance.Gdpr.ShouldBeRespected || !VoiceChatManager.Instance.Config.Recorder.IsEnabled)
             {
                 response = "Command is currently disabled.";
                 return false;
@@ -66,13 +64,23 @@ namespace VoiceChatManager.Commands
 
                 samplePlaybackComponent.MultiplyBySource = false;
 
-                var waveFormat = new WaveFormat(VoiceChatManager.Instance.Config.Recorder.SampleRate, 1);
+                var audioConverter = VoiceChatManager.Instance.Config.Converter.IsEnabled ?
+                    new AudioConverter(
+                        new WaveFormat(VoiceChatManager.Instance.Config.Converter.SampleRate, VoiceChatManager.Instance.Config.Converter.Channels),
+                        VoiceChatManager.Instance.Config.Converter.FileFormat,
+                        VoiceChatManager.Instance.Config.Converter.Speed,
+                        VoiceChatManager.Instance.Config.Converter.Bitrate,
+                        VoiceChatManager.Instance.Config.Converter.ShouldDeleteAfterConversion,
+                        VoiceChatManager.Instance.Config.Converter.Preset)
+                    : null;
+
                 var voiceChatRecorder = new VoiceChatRecorder(
                     player,
-                    waveFormat,
+                    new WaveFormat(VoiceChatManager.Instance.Config.Recorder.SampleRate, 1),
                     Path.Combine(VoiceChatManager.Instance.Config.Recorder.RootDirectoryPath, VoiceChatManager.Instance.ServerHandler.RoundName),
                     VoiceChatManager.Instance.Config.Recorder.DateTimeFormat,
-                    VoiceChatManager.Instance.Config.Recorder.MinimumBytesToWrite);
+                    VoiceChatManager.Instance.Config.Recorder.MinimumBytesToWrite,
+                    audioConverter);
 
                 if (!VoiceChatManager.Instance.Capture.Recorders.TryAdd(samplePlaybackComponent, voiceChatRecorder))
                 {
