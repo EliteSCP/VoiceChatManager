@@ -89,7 +89,7 @@ namespace VoiceChatManager.Api.Extensions
         }
 
         /// <summary>
-        /// Gets a valid file name, creating all folders if necessary.
+        /// Gets a valid file name, creating all subfolders if necessary.
         /// </summary>
         /// <param name="path">The file path to be validated.</param>
         /// <param name="extension">The optional extension to append at the end of the filename.</param>
