@@ -82,7 +82,7 @@ namespace VoiceChatManager.Commands
                     VoiceChatManager.Instance.Config.Recorder.MinimumBytesToWrite,
                     audioConverter);
 
-                if (!VoiceChatManager.Instance.Capture.Recorders.TryAdd(samplePlaybackComponent, voiceChatRecorder))
+                if (!VoiceChatManager.Instance.Capture?.Recorders.TryAdd(samplePlaybackComponent, voiceChatRecorder) ?? true)
                 {
                     response = "An error has occurred! You cannot be added to the list of voice recorded players!";
                     return true;

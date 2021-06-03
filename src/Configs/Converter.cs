@@ -40,7 +40,7 @@ namespace VoiceChatManager.Configs
         public int Channels { get; private set; } = 1;
 
         /// <inheritdoc cref="IAudioConverter.FileFormat"/>
-        [Description("The conversion format.\nRecommended: adts, mp3")]
+        [Description("The conversion format. Recommended: adts, mp3")]
         public Format FileFormat { get; private set; } = Format.adts;
 
         /// <inheritdoc cref="IAudioConverter.Speed"/>
@@ -48,7 +48,7 @@ namespace VoiceChatManager.Configs
         public float Speed { get; private set; } = 1;
 
         /// <inheritdoc cref="IAudioConverter.Preset"/>
-        [Description("The convertion preset.\nAvailable: VerySlow, Slower, Slow, Medium, Fast, Faster, VeryFast, SuperFast, UltraFast")]
+        [Description("The convertion preset. Available: VerySlow, Slower, Slow, Medium, Fast, Faster, VeryFast, SuperFast, UltraFast")]
         public ConversionPreset Preset { get; private set; } = ConversionPreset.SuperFast;
 
         /// <inheritdoc cref="IAudioConverter.Bitrate"/>

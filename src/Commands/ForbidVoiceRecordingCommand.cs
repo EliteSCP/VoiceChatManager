@@ -8,6 +8,7 @@
 namespace VoiceChatManager.Commands
 {
     using System;
+    using Api.Audio.Capture;
     using Api.Extensions;
     using CommandSystem;
     using Dissonance.Audio.Playback;
@@ -49,14 +50,16 @@ namespace VoiceChatManager.Commands
 
             player.SessionVariables.Remove("canBeVoiceRecorded");
 
+            IVoiceChatRecorder voiceChatRecorder = null;
+
             if (!player.TryGet(out SamplePlaybackComponent samplePlaybackComponent)
-                || !VoiceChatManager.Instance.Capture.Recorders.TryRemove(samplePlaybackComponent, out var voiceChatRecorder))
+                || (!VoiceChatManager.Instance.Capture?.Recorders.TryRemove(samplePlaybackComponent, out voiceChatRecorder) ?? true))
             {
                 response = "An error has occurred! You cannot be removed from the list of voice recorded players!";
                 return true;
             }
 
-            voiceChatRecorder.Dispose();
+            voiceChatRecorder?.Dispose();
 
             VoiceChatManager.Instance.Gdpr.CanBeVoiceRecordedPlayerUserIds?.Remove(player.UserId);
             VoiceChatManager.Instance.Gdpr.Save();

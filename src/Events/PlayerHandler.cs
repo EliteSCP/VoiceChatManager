@@ -53,7 +53,7 @@ namespace VoiceChatManager.Events
                     Instance.Config.Recorder.MinimumBytesToWrite,
                     audioConverter);
 
-                if (!Instance.Capture.Recorders.TryAdd(samplePlaybackComponent, voiceChatRecorder))
+                if (!Instance.Capture?.Recorders.TryAdd(samplePlaybackComponent, voiceChatRecorder) ?? true)
                     Log.Debug($"Failed to add {ev.Player} ({ev.Player.UserId}) to the list of voice recorded players!", Instance.Config.IsDebugEnabled);
             }
         }
@@ -61,13 +61,15 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Player.OnDestroying(DestroyingEventArgs)"/>
         public void OnDestroying(DestroyingEventArgs ev)
         {
-            if (!ev.Player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryRemove(playbackComponent, out var voiceChatRecorder))
+            IVoiceChatRecorder voiceChatRecorder = null;
+
+            if (!ev.Player.TryGet(out SamplePlaybackComponent playbackComponent) || (!Instance.Capture?.Recorders.TryRemove(playbackComponent, out voiceChatRecorder) ?? true))
             {
                 Log.Debug($"Failed to remove {ev.Player} ({ev.Player.UserId}) from the list of voice recorded players!", Instance.Config.IsDebugEnabled);
                 return;
             }
 
-            voiceChatRecorder.Dispose();
+            voiceChatRecorder?.Dispose();
         }
     }
 }

@@ -46,12 +46,12 @@ namespace VoiceChatManager
         /// <summary>
         /// Gets the <see cref="IVoiceChatCapture"/>.
         /// </summary>
-        public IVoiceChatCapture Capture { get; private set; }
+        public IVoiceChatCapture Capture { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="Capture"/> <see cref="CancellationTokenSource"/>.
         /// </summary>
-        public CancellationTokenSource CaptureCancellationTokenSource { get; private set; }
+        public CancellationTokenSource CaptureCancellationTokenSource { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="PlayerHandler"/> instance.
@@ -71,14 +71,6 @@ namespace VoiceChatManager
             PlayerHandler = new PlayerHandler();
             ServerHandler = new ServerHandler();
             Gdpr = new Gdpr();
-            Capture = new VoiceChatCapture(new WaveFormat(Instance.Config.Recorder.SampleRate, 1), Config.Recorder.ReadBufferSize, Config.Recorder.ReadInterval);
-
-            if (Config.Recorder.IsEnabled)
-            {
-                CaptureCancellationTokenSource = new CancellationTokenSource();
-
-                Task.Run(() => Capture.StartAsync(CaptureCancellationTokenSource.Token), CaptureCancellationTokenSource.Token);
-            }
 
             // It doesn't get invoked by Exiled
             ServerHandler.OnReloadedConfigs();
@@ -99,10 +91,12 @@ namespace VoiceChatManager
         /// <inheritdoc/>
         public override void OnDisabled()
         {
-            CaptureCancellationTokenSource.Cancel();
-            CaptureCancellationTokenSource.Dispose();
+            CaptureCancellationTokenSource?.Cancel();
+            CaptureCancellationTokenSource?.Dispose();
+            CaptureCancellationTokenSource = null;
 
-            Capture.Dispose();
+            Capture?.Dispose();
+            Capture = null;
 
             Exiled.Events.Handlers.Player.Verified -= PlayerHandler.OnVerified;
             Exiled.Events.Handlers.Player.Destroying -= PlayerHandler.OnDestroying;

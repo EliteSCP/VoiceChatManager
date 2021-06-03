@@ -9,6 +9,8 @@ namespace VoiceChatManager.Events
 {
     using System;
     using System.IO;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Api.Audio.Capture;
     using Api.Extensions;
     using Dissonance;
@@ -47,6 +49,17 @@ namespace VoiceChatManager.Events
 
             if (Instance.Config.Recorder.IsEnabled)
             {
+                if (Instance.CaptureCancellationTokenSource == null)
+                {
+                    Instance.CaptureCancellationTokenSource = new CancellationTokenSource();
+                    Instance.Capture = new VoiceChatCapture(
+                        new WaveFormat(Instance.Config.Recorder.SampleRate, 1),
+                        Instance.Config.Recorder.ReadBufferSize,
+                        Instance.Config.Recorder.ReadInterval);
+
+                    Task.Run(() => Instance.Capture.StartAsync(Instance.CaptureCancellationTokenSource.Token), Instance.CaptureCancellationTokenSource.Token);
+                }
+
                 foreach (var player in Player.List)
                 {
                     if (!Instance.Gdpr.ShouldBeRespected ||
@@ -72,7 +85,8 @@ namespace VoiceChatManager.Events
                             Instance.Config.Recorder.MinimumBytesToWrite,
                             audioConverter);
 
-                        if (!player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryAdd(playbackComponent, voiceChatRecorder))
+                        if (!player.TryGet(out SamplePlaybackComponent playbackComponent)
+                            || (!Instance.Capture?.Recorders.TryAdd(playbackComponent, voiceChatRecorder) ?? true))
                         {
                             Log.Debug($"Failed to add {player} ({player.UserId}) to the list of voice recorded players!", Instance.Config.IsDebugEnabled);
                             continue;
@@ -82,13 +96,16 @@ namespace VoiceChatManager.Events
                     }
                     else
                     {
-                        if (!player.TryGet(out SamplePlaybackComponent playbackComponent) || !Instance.Capture.Recorders.TryRemove(playbackComponent, out var voiceChatRecorder))
+                        IVoiceChatRecorder voiceChatRecorder = null;
+
+                        if (!player.TryGet(out SamplePlaybackComponent playbackComponent)
+                            || (!Instance.Capture?.Recorders.TryRemove(playbackComponent, out voiceChatRecorder) ?? true))
                         {
                             Log.Debug($"Failed to remove {player} ({player.UserId}) from the list of voice recorded players!", Instance.Config.IsDebugEnabled);
                             continue;
                         }
 
-                        voiceChatRecorder.Dispose();
+                        voiceChatRecorder?.Dispose();
 
                         player.SessionVariables.Remove("canBeVoiceRecorded");
                     }
@@ -96,7 +113,14 @@ namespace VoiceChatManager.Events
             }
             else
             {
-                Instance.Capture.Recorders.Clear();
+                Instance.Capture?.Clear();
+
+                Instance.CaptureCancellationTokenSource?.Cancel();
+                Instance.CaptureCancellationTokenSource?.Dispose();
+                Instance.CaptureCancellationTokenSource = null;
+
+                Instance.Capture?.Dispose();
+                Instance.Capture = null;
             }
         }
 
@@ -124,6 +148,6 @@ namespace VoiceChatManager.Events
         }
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRestartingRound"/>
-        public void OnRestartingRound() => Instance.Capture.Clear();
+        public void OnRestartingRound() => Instance.Capture?.Clear();
     }
 }
