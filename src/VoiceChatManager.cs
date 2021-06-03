@@ -82,7 +82,7 @@ namespace VoiceChatManager
             Exiled.Events.Handlers.Server.WaitingForPlayers += ServerHandler.OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RestartingRound += ServerHandler.OnRestartingRound;
 
-            harmonyInstance = new Harmony($"voicechatmanager.scpsl.{DateTime.Now.Ticks}");
+            harmonyInstance = new Harmony($"com.iopietro.voicechatmanager");
             harmonyInstance.PatchAll();
 
             base.OnEnabled();
