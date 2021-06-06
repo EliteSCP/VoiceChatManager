@@ -8,7 +8,10 @@
 namespace VoiceChatManager.Api.Audio.Capture
 {
     using System;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
     using Api.Extensions;
     using Exiled.API.Features;
@@ -85,12 +88,51 @@ namespace VoiceChatManager.Api.Audio.Capture
         /// Initializes a new instance of the <see cref="AudioConverter"/> class.
         /// </summary>
         /// <param name="waveFormat"><inheritdoc cref="WaveFormat"/></param>
+        /// <param name="fileFormat"><inheritdoc cref="FileFormat"/></param>
+        /// <param name="speed"><inheritdoc cref="Speed"/></param>
+        /// <param name="bitrate"><inheritdoc cref="Bitrate"/></param>
+        /// <param name="shouldDeleteAfterConversion"><inheritdoc cref="ShouldDeleteAfterConversion"/></param>
+        /// <param name="preset"><inheritdoc cref="Preset"/></param>
+        public AudioConverter(WaveFormat waveFormat, Format fileFormat, float speed, ushort bitrate, bool shouldDeleteAfterConversion, ConversionPreset preset)
+            : this(waveFormat, fileFormat, speed, bitrate, shouldDeleteAfterConversion, preset, 2)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AudioConverter"/> class.
+        /// </summary>
+        /// <param name="waveFormat"><inheritdoc cref="WaveFormat"/></param>
+        /// <param name="fileFormat"><inheritdoc cref="FileFormat"/></param>
+        /// <param name="speed"><inheritdoc cref="Speed"/></param>
+        /// <param name="bitrate"><inheritdoc cref="Bitrate"/></param>
+        /// <param name="shouldDeleteAfterConversion"><inheritdoc cref="ShouldDeleteAfterConversion"/></param>
+        /// <param name="preset"><inheritdoc cref="Preset"/></param>
+        /// <param name="concurrentConversions"><inheritdoc cref="ConcurrentLimit"/></param>
+        public AudioConverter(WaveFormat waveFormat, Format fileFormat, float speed, ushort bitrate, bool shouldDeleteAfterConversion, ConversionPreset preset, int concurrentConversions)
+            : this(waveFormat, fileFormat, speed, bitrate, shouldDeleteAfterConversion, preset, concurrentConversions, 1000)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AudioConverter"/> class.
+        /// </summary>
+        /// <param name="waveFormat"><inheritdoc cref="WaveFormat"/></param>
         /// <param name="format"><inheritdoc cref="FileFormat"/></param>
         /// <param name="speed"><inheritdoc cref="Speed"/></param>
         /// <param name="bitrate"><inheritdoc cref="Bitrate"/></param>
         /// <param name="shouldDeleteAfterConversion"><inheritdoc cref="ShouldDeleteAfterConversion"/></param>
         /// <param name="preset"><inheritdoc cref="Preset"/></param>
-        public AudioConverter(WaveFormat waveFormat, Format format, float speed, ushort bitrate, bool shouldDeleteAfterConversion, ConversionPreset preset)
+        /// <param name="concurrentConversions"><inheritdoc cref="ConcurrentLimit"/></param>
+        /// <param name="interval"><inheritdoc cref="Interval"/></param>
+        public AudioConverter(
+            WaveFormat waveFormat,
+            Format format,
+            float speed,
+            ushort bitrate,
+            bool shouldDeleteAfterConversion,
+            ConversionPreset preset,
+            int concurrentConversions,
+            int interval)
         {
             WaveFormat = waveFormat;
             FileFormat = format;
@@ -98,6 +140,8 @@ namespace VoiceChatManager.Api.Audio.Capture
             Bitrate = bitrate;
             ShouldDeleteAfterConversion = shouldDeleteAfterConversion;
             Preset = preset;
+            ConcurrentLimit = concurrentConversions;
+            Interval = interval;
         }
 
         /// <inheritdoc/>
@@ -119,18 +163,67 @@ namespace VoiceChatManager.Api.Audio.Capture
         public ConversionPreset Preset { get; }
 
         /// <inheritdoc/>
-        public async Task StartAsync(string path)
-        {
-            try
-            {
-                await path.ConvertFileAsync(WaveFormat.SampleRate, WaveFormat.Channels, Speed, FileFormat, Preset, extraParameters: $"-ab {Bitrate}k");
+        public int ConcurrentLimit { get; }
 
-                if (ShouldDeleteAfterConversion && File.Exists(path))
-                    File.Delete(path);
-            }
-            catch (Exception exception)
+        /// <inheritdoc/>
+        public int Interval { get; }
+
+        /// <inheritdoc/>
+        public ConcurrentQueue<string> Queue { get; } = new ConcurrentQueue<string>();
+
+        /// <inheritdoc/>
+        public void Clear()
+        {
+            for (int i = 0; i < Queue.Count; i++)
+                Queue.TryDequeue(out _);
+        }
+
+        /// <inheritdoc/>
+        public async Task StartAsync() => await StartAsync(default);
+
+        /// <inheritdoc/>
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            var parallelOptions = new ParallelOptions()
             {
-                Log.Error($"{typeof(AudioConverter).FullName}{nameof(StartAsync)} Failed to convert \"{path}\", error:\n{exception}");
+                CancellationToken = cancellationToken,
+            };
+            var filesToConvert = new List<string>(30);
+
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await Task.Delay(Interval, cancellationToken);
+
+                if (Queue.IsEmpty)
+                    continue;
+
+                for (int i = ConcurrentLimit; i > 0; i--)
+                {
+                    if (Queue.TryDequeue(out var path))
+                        filesToConvert.Add(path);
+
+                    if (Queue.IsEmpty)
+                        break;
+                }
+
+                Parallel.ForEach(filesToConvert, parallelOptions, async path =>
+                {
+                    try
+                    {
+                        await path.ConvertFileAsync(WaveFormat.SampleRate, WaveFormat.Channels, Speed, FileFormat, Preset, extraParameters: $"-ab {Bitrate}k");
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.Error($"{typeof(AudioConverter).FullName}{nameof(StartAsync)} Failed to convert \"{path}\", error:\n{exception}");
+                    }
+
+                    if (ShouldDeleteAfterConversion && File.Exists(path))
+                        File.Delete(path);
+                });
+
+                filesToConvert.Clear();
             }
         }
     }

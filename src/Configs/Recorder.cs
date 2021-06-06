@@ -47,13 +47,13 @@ namespace VoiceChatManager.Configs
         public string DateTimeFormat { get; private set; } = "dd-MM-yy HH.mm.ss.fff";
 
         /// <inheritdoc cref="IVoiceChatRecorder.MinimumBytesToWrite"/>
-        [Description("The minimum number of bytes required to write the audio, minimum is the read buffer size.")]
+        [Description("The minimum number of bytes required to write the audio, minimum is the read buffer size, 192000 bytes equals 1 second.")]
         public int MinimumBytesToWrite { get; private set; } = 192000;
 
         /// <summary>
-        /// Gets the number of rounds which have to pass to delete all audio files, 0 means disabled.
+        /// Gets the number of rounds which have to pass to delete the oldest round riectory. 1 means delete at every round restart, 0 means disabled.
         /// </summary>
-        [Description("Deletes audio files every number of rounds. Set it 0 to disable.")]
-        public ushort DeleteEveryNumberOfRounds { get; private set; } = 0;
+        [Description("Keep audio files for a specific number of rounds, the oldest round directory will be deleted after surpassing this threshold. Set it to 1 to delete everything at every round restart and 0 to disable.")]
+        public ushort KeepLastNumberOfRounds { get; private set; } = 0;
     }
 }

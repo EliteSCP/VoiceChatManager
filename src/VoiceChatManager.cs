@@ -47,9 +47,19 @@ namespace VoiceChatManager
         public IVoiceChatCapture Capture { get; internal set; }
 
         /// <summary>
+        /// Gets the <see cref="IAudioConverter"/> instance.
+        /// </summary>
+        public IAudioConverter Converter { get; internal set; }
+
+        /// <summary>
         /// Gets the <see cref="Capture"/> <see cref="CancellationTokenSource"/>.
         /// </summary>
         public CancellationTokenSource CaptureCancellationTokenSource { get; internal set; }
+
+        /// <summary>
+        /// Gets the <see cref="Converter"/> <see cref="CancellationTokenSource"/>.
+        /// </summary>
+        public CancellationTokenSource ConverterCancellationTokenSource { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="PlayerHandler"/> instance.
@@ -89,12 +99,21 @@ namespace VoiceChatManager
         /// <inheritdoc/>
         public override void OnDisabled()
         {
+            ServerHandler.RoundPaths.Clear();
+
             CaptureCancellationTokenSource?.Cancel();
             CaptureCancellationTokenSource?.Dispose();
             CaptureCancellationTokenSource = null;
 
             Capture?.Dispose();
             Capture = null;
+
+            ConverterCancellationTokenSource?.Cancel();
+            ConverterCancellationTokenSource?.Dispose();
+            ConverterCancellationTokenSource = null;
+
+            Converter?.Clear();
+            Converter = null;
 
             Exiled.Events.Handlers.Player.Verified -= PlayerHandler.OnVerified;
             Exiled.Events.Handlers.Player.Destroying -= PlayerHandler.OnDestroying;

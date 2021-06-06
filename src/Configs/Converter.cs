@@ -7,6 +7,7 @@
 
 namespace VoiceChatManager.Configs
 {
+    using System;
     using System.ComponentModel;
     using Api.Audio.Capture;
     using Exiled.API.Interfaces;
@@ -54,5 +55,13 @@ namespace VoiceChatManager.Configs
         /// <inheritdoc cref="IAudioConverter.Bitrate"/>
         [Description("The converted audio bitrate, in kbps. The lower the bitrate, the less space will be occupied.")]
         public ushort Bitrate { get; private set; } = 128;
+
+        /// <inheritdoc cref="IAudioConverter.ConcurrentLimit"/>
+        [Description("The maximum amount of conversions that can be done concurrently.")]
+        public int ConcurrentLimit { get; private set; } = Environment.ProcessorCount;
+
+        /// <inheritdoc cref="IAudioConverter.Interval"/>
+        [Description("The conversion interval, in milliseconds.")]
+        public int Interval { get; private set; } = 1000;
     }
 }

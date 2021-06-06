@@ -35,23 +35,13 @@ namespace VoiceChatManager.Events
             {
                 ev.Player.SessionVariables["canBeVoiceRecorded"] = true;
 
-                var audioConverter = Instance.Config.Converter.IsEnabled ?
-                    new AudioConverter(
-                        new WaveFormat(Instance.Config.Converter.SampleRate, Instance.Config.Converter.Channels),
-                        Instance.Config.Converter.FileFormat,
-                        Instance.Config.Converter.Speed,
-                        Instance.Config.Converter.Bitrate,
-                        Instance.Config.Converter.ShouldDeleteAfterConversion,
-                        Instance.Config.Converter.Preset)
-                    : null;
-
                 var voiceChatRecorder = new VoiceChatRecorder(
                     ev.Player,
                     new WaveFormat(Instance.Config.Recorder.SampleRate, 1),
                     Path.Combine(Instance.Config.Recorder.RootDirectoryPath, Instance.ServerHandler.RoundName),
                     Instance.Config.Recorder.DateTimeFormat,
                     Instance.Config.Recorder.MinimumBytesToWrite,
-                    audioConverter);
+                    Instance.Converter);
 
                 if (!Instance.Capture?.Recorders.TryAdd(samplePlaybackComponent, voiceChatRecorder) ?? true)
                     Log.Debug($"Failed to add {ev.Player} ({ev.Player.UserId}) to the list of voice recorded players!", Instance.Config.IsDebugEnabled);

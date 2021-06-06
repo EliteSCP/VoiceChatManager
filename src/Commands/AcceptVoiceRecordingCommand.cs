@@ -64,23 +64,13 @@ namespace VoiceChatManager.Commands
 
                 samplePlaybackComponent.MultiplyBySource = false;
 
-                var audioConverter = VoiceChatManager.Instance.Config.Converter.IsEnabled ?
-                    new AudioConverter(
-                        new WaveFormat(VoiceChatManager.Instance.Config.Converter.SampleRate, VoiceChatManager.Instance.Config.Converter.Channels),
-                        VoiceChatManager.Instance.Config.Converter.FileFormat,
-                        VoiceChatManager.Instance.Config.Converter.Speed,
-                        VoiceChatManager.Instance.Config.Converter.Bitrate,
-                        VoiceChatManager.Instance.Config.Converter.ShouldDeleteAfterConversion,
-                        VoiceChatManager.Instance.Config.Converter.Preset)
-                    : null;
-
                 var voiceChatRecorder = new VoiceChatRecorder(
                     player,
                     new WaveFormat(VoiceChatManager.Instance.Config.Recorder.SampleRate, 1),
                     Path.Combine(VoiceChatManager.Instance.Config.Recorder.RootDirectoryPath, VoiceChatManager.Instance.ServerHandler.RoundName),
                     VoiceChatManager.Instance.Config.Recorder.DateTimeFormat,
                     VoiceChatManager.Instance.Config.Recorder.MinimumBytesToWrite,
-                    audioConverter);
+                    VoiceChatManager.Instance.Converter);
 
                 if (!VoiceChatManager.Instance.Capture?.Recorders.TryAdd(samplePlaybackComponent, voiceChatRecorder) ?? true)
                 {

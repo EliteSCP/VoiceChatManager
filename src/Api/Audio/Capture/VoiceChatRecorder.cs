@@ -120,7 +120,10 @@ namespace VoiceChatManager.Api.Audio.Capture
         public CustomWaveWriter Writer { get; private set; }
 
         /// <inheritdoc/>
-        public void Reset()
+        public void Reset() => Reset(WaveFormat);
+
+        /// <inheritdoc/>
+        public void Reset(WaveFormat waveFormat)
         {
             if (Writer != null && Writer.Length < MinimumBytesToWrite)
                 return;
@@ -131,7 +134,9 @@ namespace VoiceChatManager.Api.Audio.Capture
             Writer = null;
 
             if (Converter != null && !string.IsNullOrEmpty(filename))
-                Converter.StartAsync(filename);
+                Converter.Queue.Enqueue(filename);
+
+            WaveFormat = waveFormat;
         }
 
         /// <inheritdoc/>
@@ -150,10 +155,12 @@ namespace VoiceChatManager.Api.Audio.Capture
             if (isDisposed)
                 throw new ObjectDisposedException(nameof(VoiceChatRecorder));
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (Writer == null && Player != null && Player.GameObject != null)
                 Writer = new CustomWaveWriter(Path.Combine(RootDirectoryPath, $"{Player.Nickname} ({Player.UserId})", $"({Player.Id}) [{Player.Role}] {DateTime.Now.ToString(DateTimeFormat)}"), WaveFormat);
 
-            await Writer.WriteSamplesAsync(samples);
+            await Writer.WriteSamplesAsync(samples, cancellationToken);
         }
 
         /// <summary>
@@ -173,7 +180,7 @@ namespace VoiceChatManager.Api.Audio.Capture
                 Writer = null;
 
                 if (Converter != null && !string.IsNullOrEmpty(filename))
-                    Converter.StartAsync(filename);
+                    Converter.Queue.Enqueue(filename);
             }
 
             isDisposed = true;

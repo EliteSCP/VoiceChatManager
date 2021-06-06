@@ -121,7 +121,7 @@ namespace VoiceChatManager.Api.Audio.Capture
         }
 
         /// <summary>
-        /// Updates the read thread.
+        /// Reads players' voice samples.
         /// </summary>
         private async Task ReadAsync(CancellationToken cancellationToken)
         {
@@ -132,6 +132,8 @@ namespace VoiceChatManager.Api.Audio.Capture
 
             while (true)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 Parallel.ForEach(Recorders, parallelOptions, async recorder =>
                 {
                     if (!recorder.Key.HasActiveSession)
@@ -155,10 +157,7 @@ namespace VoiceChatManager.Api.Audio.Capture
                     finally
                     {
                         if (!recorder.Key.HasActiveSession)
-                        {
-                            recorder.Value.WaveFormat = WaveFormat;
-                            recorder.Value.Reset();
-                        }
+                            recorder.Value.Reset(WaveFormat);
                     }
                 });
 

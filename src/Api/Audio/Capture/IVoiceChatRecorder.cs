@@ -30,20 +30,20 @@ namespace VoiceChatManager.Api.Audio.Capture
         Player Player { get; }
 
         /// <summary>
-        /// Gets or sets the root directory path, at which audio files will be saved.
+        /// Gets the root directory path, at which audio files will be saved.
         /// </summary>
-        string RootDirectoryPath { get; set; }
+        string RootDirectoryPath { get; }
 
         /// <summary>
-        /// Gets or sets the <see cref="DateTime"/> format that will be written in the file name.
+        /// Gets the <see cref="DateTime"/> format that will be written in the file name.
         /// </summary>
         /// <remarks>https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings .</remarks>
-        string DateTimeFormat { get; set; }
+        string DateTimeFormat { get; }
 
         /// <summary>
-        /// Gets or sets the minimum number of bytes required to write the audio, minimum is the read buffer size.
+        /// Gets the minimum number of bytes required to write the audio, minimum is the read buffer size.
         /// </summary>
-        int MinimumBytesToWrite { get; set; }
+        int MinimumBytesToWrite { get; }
 
         /// <summary>
         /// Gets the audio converter.
@@ -59,6 +59,12 @@ namespace VoiceChatManager.Api.Audio.Capture
         /// Resets the internal <see cref="Stream"/>.
         /// </summary>
         void Reset();
+
+        /// <summary>
+        /// Resets the internal <see cref="Stream"/> and change the <see cref="WaveFormat"/> with the one provided.
+        /// </summary>
+        /// <param name="waveFormat">The new <see cref="WaveFormat"/> to set.</param>
+        void Reset(WaveFormat waveFormat);
 
         /// <summary>
         /// Writes <see cref="Player"/>'s captured voice samples.

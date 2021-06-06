@@ -7,6 +7,8 @@
 
 namespace VoiceChatManager.Api.Audio.Capture
 {
+    using System.Collections.Concurrent;
+    using System.Threading;
     using System.Threading.Tasks;
     using NAudio.Wave;
     using Xabe.FFmpeg;
@@ -47,10 +49,36 @@ namespace VoiceChatManager.Api.Audio.Capture
         ConversionPreset Preset { get; }
 
         /// <summary>
+        /// Gets the maximum amount of conversions that can be done concurrently.
+        /// </summary>
+        int ConcurrentLimit { get; }
+
+        /// <summary>
+        /// Gets the conversion interval.
+        /// </summary>
+        int Interval { get; }
+
+        /// <summary>
+        /// Gets the queue of file paths to be converted.
+        /// </summary>
+        ConcurrentQueue<string> Queue { get; }
+
+        /// <summary>
+        /// Clears the conversion process.
+        /// </summary>
+        void Clear();
+
+        /// <summary>
         /// Starts the conversion.
         /// </summary>
-        /// <param name="path">The file to be converted path.</param>
         /// <returns>Returns a <see cref="Task{TResult}"/>.</returns>
-        Task StartAsync(string path);
+        Task StartAsync();
+
+        /// <summary>
+        /// Starts the conversion.
+        /// </summary>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance.</param>
+        /// <returns>Returns a <see cref="Task{TResult}"/>.</returns>
+        Task StartAsync(CancellationToken cancellationToken);
     }
 }

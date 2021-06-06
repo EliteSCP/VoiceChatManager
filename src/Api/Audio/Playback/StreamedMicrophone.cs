@@ -10,7 +10,6 @@ namespace VoiceChatManager.Api.Audio.Playback
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using Api.Utilities;
     using Dissonance;
     using Dissonance.Audio.Capture;
     using Enums;
@@ -27,12 +26,18 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// <summary>
         /// The size of the audio frame.
         /// </summary>
-        public const uint FrameSize = 1920;
+        public const int FrameSize = 1920;
 
-        private readonly WaveFormat format = new WaveFormat(48000, 1);
+        /// <summary>
+        /// The audio sample rate.
+        /// </summary>
+        public const int SampleRate = 48000;
+
+        private readonly WaveFormat format = new WaveFormat(SampleRate, 1);
         private readonly float[] frame = new float[FrameSize];
         private readonly byte[] frameBytes = new byte[FrameSize * 4];
         private readonly List<IMicrophoneSubscriber> subscribers = new List<IMicrophoneSubscriber>();
+        private DissonanceComms dissonanceComms;
         private float elapsedTime;
 
         /// <summary>
@@ -53,6 +58,20 @@ namespace VoiceChatManager.Api.Audio.Playback
 
         /// <inheritdoc/>
         public virtual string Name { get; protected set; } = "StreamedMicrophone";
+
+        /// <summary>
+        /// Gets the <see cref="DissonanceComms"/> instance.
+        /// </summary>
+        public DissonanceComms DissonanceComms
+        {
+            get
+            {
+                if (dissonanceComms == null)
+                    dissonanceComms = GetComponent<DissonanceComms>();
+
+                return dissonanceComms;
+            }
+        }
 
         /// <inheritdoc/>
         public Stream Stream { get; protected set; }
@@ -131,11 +150,11 @@ namespace VoiceChatManager.Api.Audio.Playback
             }
 
             if (!EqualityComparer<RoomChannel>.Default.Equals(RoomChannel, default))
-                CachedProperties.DissonanceComms.RoomChannels.Close(RoomChannel);
+                DissonanceComms.RoomChannels.Close(RoomChannel);
 
             List.Pause();
 
-            RoomChannel = CachedProperties.DissonanceComms.RoomChannels.Open(ChannelName, IsThreeDimensional, Priority, Volume / 100);
+            RoomChannel = DissonanceComms.RoomChannels.Open(ChannelName, IsThreeDimensional, Priority, Volume / 100);
 
             Name = string.IsNullOrEmpty(name) ? Name : name;
             IsRecording = true;
@@ -152,7 +171,7 @@ namespace VoiceChatManager.Api.Audio.Playback
             IsRecording = false;
             Status = CaptureStatusType.Stopped;
 
-            Log.Debug($"Stream has been stopped at {Stream.Position.GetDuration().ToString(VoiceChatManager.Instance.Config.DurationFormat)}.", Instance.Config.IsDebugEnabled);
+            Log.Debug($"Stream has been stopped at {Stream.Position.GetDuration().ToString(Instance.Config.DurationFormat)}.", Instance.Config.IsDebugEnabled);
 
             if (Stream?.CanSeek ?? false)
                 Stream.Seek(0, SeekOrigin.Begin);
@@ -164,7 +183,7 @@ namespace VoiceChatManager.Api.Audio.Playback
             IsRecording = false;
             Status = CaptureStatusType.Paused;
 
-            Log.Debug($"Stream has been paused at {Stream.Position.GetDuration().ToString(VoiceChatManager.Instance.Config.DurationFormat)}.", Instance.Config.IsDebugEnabled);
+            Log.Debug($"Stream has been paused at {Stream.Position.GetDuration().ToString(Instance.Config.DurationFormat)}.", Instance.Config.IsDebugEnabled);
         }
 
         /// <inheritdoc/>
@@ -172,10 +191,10 @@ namespace VoiceChatManager.Api.Audio.Playback
         {
             StopCapture();
 
-            CachedProperties.DissonanceComms.ResetMicrophoneCapture();
-            CachedProperties.DissonanceComms._capture.Start(CachedProperties.CommsNetwork, this);
-            CachedProperties.DissonanceComms.MicrophoneName = Name = string.IsNullOrEmpty(name) ? Name : name;
-            CachedProperties.DissonanceComms.IsMuted = false;
+            DissonanceComms.ResetMicrophoneCapture();
+            DissonanceComms._capture.Start(DissonanceComms._net, this);
+            DissonanceComms.MicrophoneName = Name = string.IsNullOrEmpty(name) ? Name : name;
+            DissonanceComms.IsMuted = false;
 
             StartCapture(Name);
         }
@@ -239,7 +258,6 @@ namespace VoiceChatManager.Api.Audio.Playback
             }
 
             GC.SuppressFinalize(this);
-
             Destroy(this);
         }
     }

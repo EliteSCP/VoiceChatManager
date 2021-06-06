@@ -8,6 +8,7 @@
 namespace VoiceChatManager.Events
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -31,21 +32,54 @@ namespace VoiceChatManager.Events
         /// </summary>
         public string RoundName { get; private set; }
 
+        /// <summary>
+        /// Gets the round paths queue.
+        /// </summary>
+        internal Queue<string> RoundPaths { get; private set; } = new Queue<string>(70);
+
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnReloadedConfigs"/>
         public void OnReloadedConfigs()
         {
-            if (!string.IsNullOrEmpty(Instance.Config.FFmpegDirectoryPath))
+            if (Directory.Exists(Instance.Config.FFmpegDirectoryPath))
             {
                 FFmpeg.SetExecutablesPath(Instance.Config.FFmpegDirectoryPath);
             }
             else if (Instance.Config.Converter.IsEnabled)
             {
-                Log.Warn($"Audio converter cannot be enabled, ffmpeg wasn't found at \"{Instance.Config.FFmpegDirectoryPath}\"");
+                Log.Warn($"Audio converter cannot be enabled, FFmpeg wasn't found at \"{Instance.Config.FFmpegDirectoryPath}\"");
 
                 Instance.Config.Converter.IsEnabled = false;
             }
 
             Instance.Gdpr.Load();
+
+            if (Instance.Config.Converter.IsEnabled)
+            {
+                if (Instance.ConverterCancellationTokenSource == null)
+                {
+                    Instance.ConverterCancellationTokenSource = new CancellationTokenSource();
+                    Instance.Converter = new AudioConverter(
+                                new WaveFormat(Instance.Config.Converter.SampleRate, Instance.Config.Converter.Channels),
+                                Instance.Config.Converter.FileFormat,
+                                Instance.Config.Converter.Speed,
+                                Instance.Config.Converter.Bitrate,
+                                Instance.Config.Converter.ShouldDeleteAfterConversion,
+                                Instance.Config.Converter.Preset,
+                                Instance.Config.Converter.ConcurrentLimit,
+                                Instance.Config.Converter.Interval);
+
+                    Task.Run(() => Instance.Converter.StartAsync(Instance.ConverterCancellationTokenSource.Token));
+                }
+            }
+            else
+            {
+                Instance.ConverterCancellationTokenSource?.Cancel();
+                Instance.ConverterCancellationTokenSource?.Dispose();
+                Instance.ConverterCancellationTokenSource = null;
+
+                Instance.Converter?.Clear();
+                Instance.Converter = null;
+            }
 
             if (Instance.Config.Recorder.IsEnabled)
             {
@@ -57,7 +91,7 @@ namespace VoiceChatManager.Events
                         Instance.Config.Recorder.ReadBufferSize,
                         Instance.Config.Recorder.ReadInterval);
 
-                    Task.Run(() => Instance.Capture.StartAsync(Instance.CaptureCancellationTokenSource.Token), Instance.CaptureCancellationTokenSource.Token);
+                    Task.Run(() => Instance.Capture.StartAsync(Instance.CaptureCancellationTokenSource.Token));
                 }
 
                 foreach (var player in Player.List)
@@ -67,23 +101,13 @@ namespace VoiceChatManager.Events
                     {
                         player.SessionVariables["canBeVoiceRecorded"] = true;
 
-                        var audioConverter = Instance.Config.Converter.IsEnabled ?
-                            new AudioConverter(
-                                new WaveFormat(Instance.Config.Converter.SampleRate, Instance.Config.Converter.Channels),
-                                Instance.Config.Converter.FileFormat,
-                                Instance.Config.Converter.Speed,
-                                Instance.Config.Converter.Bitrate,
-                                Instance.Config.Converter.ShouldDeleteAfterConversion,
-                                Instance.Config.Converter.Preset)
-                            : null;
-
                         var voiceChatRecorder = new VoiceChatRecorder(
                             player,
                             new WaveFormat(Instance.Config.Recorder.SampleRate, 1),
                             Path.Combine(Instance.Config.Recorder.RootDirectoryPath, RoundName),
                             Instance.Config.Recorder.DateTimeFormat,
                             Instance.Config.Recorder.MinimumBytesToWrite,
-                            audioConverter);
+                            Instance.Converter);
 
                         if (!player.TryGet(out SamplePlaybackComponent playbackComponent)
                             || (!Instance.Capture?.Recorders.TryAdd(playbackComponent, voiceChatRecorder) ?? true))
@@ -113,7 +137,7 @@ namespace VoiceChatManager.Events
             }
             else
             {
-                Instance.Capture?.Clear();
+                RoundPaths.Clear();
 
                 Instance.CaptureCancellationTokenSource?.Cancel();
                 Instance.CaptureCancellationTokenSource?.Dispose();
@@ -131,20 +155,21 @@ namespace VoiceChatManager.Events
             if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
                 OnReloadedConfigs();
 
-            var roundsCounter = PlayerStats.UptimeRounds - 1;
-
-            if (Instance.Config.Recorder.IsEnabled
-                && Instance.Config.Recorder.DeleteEveryNumberOfRounds > 0
-                && roundsCounter > 0
-                && roundsCounter % Instance.Config.Recorder.DeleteEveryNumberOfRounds == 0)
-            {
-                if (Directory.Exists(Instance.Config.Recorder.RootDirectoryPath))
-                    Directory.Delete(Instance.Config.Recorder.RootDirectoryPath, true);
-            }
-
             Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
 
             RoundName = $"Round {DateTime.Now.ToString(Instance.Config.Recorder.DateTimeFormat)}";
+
+            if (Instance.Config.Recorder.IsEnabled && Instance.Config.Recorder.KeepLastNumberOfRounds > 0)
+            {
+                if (RoundPaths.Count > Instance.Config.Recorder.KeepLastNumberOfRounds
+                    && RoundPaths.TryDequeue(out var path)
+                    && Directory.Exists(path))
+                {
+                    Task.Run(() => Directory.Delete(path, true));
+                }
+
+                RoundPaths.Enqueue(Path.Combine(Instance.Config.Recorder.RootDirectoryPath, RoundName));
+            }
         }
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRestartingRound"/>

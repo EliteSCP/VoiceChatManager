@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="IStreamedMicrophone.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -32,6 +32,11 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// Gets the streamed microphone name.
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Gets the <see cref="DissonanceComms"/> instance.
+        /// </summary>
+        DissonanceComms DissonanceComms { get; }
 
         /// <summary>
         /// Gets the stream.

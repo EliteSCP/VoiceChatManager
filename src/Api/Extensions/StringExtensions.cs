@@ -8,6 +8,7 @@
 namespace VoiceChatManager.Api.Extensions
 {
     using System.IO;
+    using System.Threading;
     using System.Threading.Tasks;
     using Xabe.FFmpeg;
 
@@ -72,6 +73,24 @@ namespace VoiceChatManager.Api.Extensions
         /// <returns>Returns a <see cref="Task{TResult}"/>.</returns>
         public static async Task<IConversionResult> ConvertFileAsync(this string path, int sampleRate = 48000, int channels = 1, float speed = 1, Format format = Format.f32le, ConversionPreset preset = ConversionPreset.Medium, bool canOverwriteOutput = true, string extraParameters = null)
         {
+            return await path.ConvertFileAsync(default, sampleRate, channels, speed, format, preset, canOverwriteOutput, extraParameters);
+        }
+
+        /// <summary>
+        /// Converts an audio/video file to a specified format.
+        /// </summary>
+        /// <param name="path">The file path.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> instance.</param>
+        /// <param name="sampleRate">The converted audio sample rate.</param>
+        /// <param name="channels">The converted audio channels.</param>
+        /// <param name="speed">The converted audio speed.</param>
+        /// <param name="format">The converted audio format.</param>
+        /// <param name="preset">The conversion preset, faster speed causes worse optimization and quality.</param>
+        /// <param name="canOverwriteOutput">Indicates whether the output file can be overwritten or not.</param>
+        /// <param name="extraParameters">The extra parameters used for the conversion, null if none.</param>
+        /// <returns>Returns a <see cref="Task{TResult}"/>.</returns>
+        public static async Task<IConversionResult> ConvertFileAsync(this string path, CancellationToken cancellationToken, int sampleRate = 48000, int channels = 1, float speed = 1, Format format = Format.f32le, ConversionPreset preset = ConversionPreset.Medium, bool canOverwriteOutput = true, string extraParameters = null)
+        {
             if (!File.Exists(path))
                 throw new FileNotFoundException(null, path);
 
@@ -85,7 +104,7 @@ namespace VoiceChatManager.Api.Extensions
             if (!string.IsNullOrEmpty(extraParameters))
                 conversion.AddParameter(extraParameters);
 
-            return await conversion.Start();
+            return await conversion.Start(cancellationToken);
         }
 
         /// <summary>

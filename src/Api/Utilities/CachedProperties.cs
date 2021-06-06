@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="CachedProperties.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -9,13 +9,9 @@ namespace VoiceChatManager.Api.Utilities
 {
     using System;
     using System.Reflection;
-    using Api.Audio.Playback;
     using Dissonance;
-    using Dissonance.Audio.Codecs;
     using Dissonance.Audio.Playback;
     using Dissonance.Integrations.MirrorIgnorance;
-    using Dissonance.Networking;
-    using Mirror;
     using UnityEngine;
 
     /// <summary>
@@ -23,14 +19,8 @@ namespace VoiceChatManager.Api.Utilities
     /// </summary>
     public static class CachedProperties
     {
-        /// <summary>
-        /// The dissonance client ID and nickname.
-        /// </summary>
-        public static readonly (ushort id, string nickname) HostInfo = (9999, "Dummy");
-
         private static MirrorIgnoranceCommsNetwork commsNetwork;
         private static DissonanceComms dissonanceComms;
-        private static ClientInfo<MirrorConn> hostClientInfo;
         private static FieldInfo maximumVoiceChatDesync;
 
         /// <summary>
@@ -62,20 +52,6 @@ namespace VoiceChatManager.Api.Utilities
         }
 
         /// <summary>
-        /// Gets the host client info.
-        /// </summary>
-        public static ClientInfo<MirrorConn> HostClientInfo
-        {
-            get
-            {
-                if (hostClientInfo == null)
-                    hostClientInfo = CommsNetwork.Server._clients.GetOrCreateClientInfo(HostInfo.id, HostInfo.nickname, CodecSettings, new MirrorConn(NetworkServer.localConnection));
-
-                return hostClientInfo;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the maximum tolerable desync by the decoder pipeline.
         /// </summary>
         public static TimeSpan MaximumVoiceChatDesync
@@ -89,10 +65,5 @@ namespace VoiceChatManager.Api.Utilities
                 maximumVoiceChatDesync.SetValue(null, value);
             }
         }
-
-        /// <summary>
-        /// Gets the audio stream codec settings.
-        /// </summary>
-        public static CodecSettings CodecSettings { get; } = new CodecSettings(Codec.Opus, StreamedMicrophone.FrameSize, 48000);
     }
 }
