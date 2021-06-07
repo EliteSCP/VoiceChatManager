@@ -46,20 +46,21 @@ namespace VoiceChatManager
         [Description("A dictionary of audio presets with their name as key and path as value")]
         public Dictionary<string, string> Presets { get; private set; } = new Dictionary<string, string>()
         {
-            ["amogus"] = @"C:\Imposter\sus\AMOGUS.mp3",
+            ["windows"] = @"C:\Imposter\sus\AMOGUS.mp3",
+            ["linux"] = @"/when/the/imposter/is/sus.mp4",
         };
 
         /// <summary>
-        /// Gets or sets the directory in which ffmpeg.exe is located.
+        /// Gets the directory in which ffmpeg.exe is located.
         /// </summary>
         [Description("The directory in which ffmpeg.exe is located, leave it empty or null if you don't want to use it")]
-        public string FFmpegDirectoryPath { get; set; }
+        public string FFmpegDirectoryPath { get; private set; }
 
         /// <summary>
-        /// Gets or sets the full path at which GDPR related configs will be saved.
+        /// Gets the full path at which GDPR related configs will be saved.
         /// </summary>
         [Description("The full path at which GDPR related configs will be saved")]
-        public string GdprConfigFullPath { get; set; } = Path.Combine(Paths.Configs, "VoiceChatManager", "GDPR", "global.yml");
+        public string GdprConfigFullPath { get; private set; } = Path.Combine(Paths.Configs, "VoiceChatManager", "GDPR", "global.yml");
 
         /// <summary>
         /// Gets the directory path at which GDPR related configs will be saved.
@@ -89,10 +90,10 @@ namespace VoiceChatManager
         }
 
         /// <summary>
-        /// Gets or sets the audio duration format.
+        /// Gets the audio duration format.
         /// </summary>
         [Description("The audio duration format")]
-        public string DurationFormat { get; set; } = "hh\\:mm\\:ss\\.ff";
+        public string DurationFormat { get; private set; } = "hh\\:mm\\:ss\\.ff";
 
         /// <summary>
         /// Gets or sets a value indicating whether the debug is enabled or not.
