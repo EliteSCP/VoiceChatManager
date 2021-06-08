@@ -153,7 +153,7 @@ namespace VoiceChatManager.Api.Audio.Capture
         public async ValueTask WriteAsync(ArraySegment<byte> samples, CancellationToken cancellationToken)
         {
             if (isDisposed)
-                throw new ObjectDisposedException(nameof(VoiceChatRecorder));
+                throw new ObjectDisposedException(GetType().FullName);
 
             cancellationToken.ThrowIfCancellationRequested();
 

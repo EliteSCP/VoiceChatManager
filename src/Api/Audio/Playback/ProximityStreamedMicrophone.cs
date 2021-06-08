@@ -67,7 +67,7 @@ namespace VoiceChatManager.Api.Audio.Playback
             Dummy.transform.localScale = Vector3.zero;
             Dummy.transform.localPosition = Position;
 
-            // Updates the host position to every player near it by bypassing client-side local player checks.
+            // Updates the host position to every player near it and bypasses client-side local player checks.
             foreach (var player in Player.List)
             {
                 if ((Position - player.Position).sqrMagnitude > 375)

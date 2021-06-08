@@ -141,7 +141,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         {
             if (isDisposed)
             {
-                return null;
+                throw new ObjectDisposedException(GetType().FullName);
             }
             else if (Stream == null)
             {
@@ -176,7 +176,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public virtual void StopCapture()
         {
             if (isDisposed)
-                return;
+                throw new ObjectDisposedException(GetType().FullName);
 
             if (!EqualityComparer<RoomChannel>.Default.Equals(RoomChannel, default))
                 DissonanceComms.RoomChannels.Close(RoomChannel);
@@ -194,7 +194,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public virtual void PauseCapture()
         {
             if (isDisposed)
-                return;
+                throw new ObjectDisposedException(GetType().FullName);
 
             if (!EqualityComparer<RoomChannel>.Default.Equals(RoomChannel, default))
                 DissonanceComms.RoomChannels.Close(RoomChannel);
@@ -209,7 +209,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public virtual void RestartCapture(string name, bool force = true)
         {
             if (isDisposed)
-                return;
+                throw new ObjectDisposedException(GetType().FullName);
 
             if (force)
                 StopCapture();
@@ -233,7 +233,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public virtual bool UpdateSubscribers()
         {
             if (isDisposed)
-                return true;
+                throw new ObjectDisposedException(GetType().FullName);
 
             if (Stream == null)
             {
@@ -279,7 +279,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         protected virtual void Dispose(bool shouldDisposeAllResources)
         {
             if (isDisposed)
-                return;
+                throw new ObjectDisposedException(GetType().FullName);
 
             StopCapture();
 
