@@ -17,7 +17,9 @@ namespace VoiceChatManager.Events
     using Dissonance;
     using Dissonance.Audio.Playback;
     using Exiled.API.Features;
+    using Mirror;
     using NAudio.Wave;
+    using UnityEngine;
     using Xabe.FFmpeg;
     using static VoiceChatManager;
     using Log = Exiled.API.Features.Log;
@@ -151,6 +153,8 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnWaitingForPlayers"/>
         public void OnWaitingForPlayers()
         {
+            InitHost();
+
             // It doesn't get invoked by Exiled
             if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
                 OnReloadedConfigs();
@@ -174,5 +178,19 @@ namespace VoiceChatManager.Events
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRestartingRound"/>
         public void OnRestartingRound() => Instance.Capture?.Clear();
+
+        /// <summary>
+        /// Inits the host, to play positional audio.
+        /// </summary>
+        private void InitHost()
+        {
+            Server.Host.GameObject.transform.localScale = Vector3.zero;
+            Server.Host.IsGodModeEnabled = true;
+
+            NetworkServer.Spawn(Server.Host.GameObject);
+
+            Server.Host.ReferenceHub.characterClassManager.NetworkCurClass = RoleType.ClassD;
+            Server.Host.ReferenceHub.characterClassManager.ApplyProperties();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PlayerProximityStreamedMicrophone.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -19,7 +19,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public virtual Player Player { get; protected set; }
 
         /// <inheritdoc/>
-        public override Vector3 Position => Player.Position;
+        public override Vector3 Position => Player?.Position ?? Vector3.zero;
 
         /// <inheritdoc/>
         public override string Name { get; protected set; } = "PlayerProximityStreamedMicrophone";
@@ -48,12 +48,6 @@ namespace VoiceChatManager.Api.Audio.Playback
             Player = null;
 
             base.Dispose(shouldDisposeAllResources);
-        }
-
-        private void Update()
-        {
-            if (Dummy != null && Player.GameObject != null)
-                Dummy.playerMovementSync.OverridePosition(Player.Position, 0f);
         }
     }
 }

@@ -39,6 +39,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         private readonly List<IMicrophoneSubscriber> subscribers = new List<IMicrophoneSubscriber>();
         private DissonanceComms dissonanceComms;
         private float elapsedTime;
+        private bool isDisposed;
 
         /// <summary>
         /// Finalizes an instance of the <see cref="StreamedMicrophone"/> class.
@@ -54,7 +55,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public virtual CaptureStatusType Status { get; protected set; }
 
         /// <inheritdoc/>
-        public ChannelPriority Priority { get; protected set; }
+        public ChannelPriority Priority { get; set; }
 
         /// <inheritdoc/>
         public virtual string Name { get; protected set; } = "StreamedMicrophone";
@@ -80,7 +81,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         public virtual bool IsRecording { get; protected set; }
 
         /// <inheritdoc/>
-        public virtual bool IsThreeDimensional { get; }
+        public virtual bool IsThreeDimensional { get; set; }
 
         /// <inheritdoc/>
         public TimeSpan Latency { get; protected set; }
@@ -138,7 +139,11 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// <returns>Returns the <see cref="WaveFormat"/>.</returns>
         public virtual WaveFormat StartCapture(string name)
         {
-            if (Stream == null)
+            if (isDisposed)
+            {
+                return null;
+            }
+            else if (Stream == null)
             {
                 Log.Error($"Stream is null! Microphone name: \"{name}\".");
                 return format;
@@ -149,16 +154,18 @@ namespace VoiceChatManager.Api.Audio.Playback
                 return format;
             }
 
-            if (!EqualityComparer<RoomChannel>.Default.Equals(RoomChannel, default))
-                DissonanceComms.RoomChannels.Close(RoomChannel);
-
             List.Pause();
 
             RoomChannel = DissonanceComms.RoomChannels.Open(ChannelName, IsThreeDimensional, Priority, Volume / 100);
 
-            Name = string.IsNullOrEmpty(name) ? Name : name;
+            elapsedTime = 0;
+
+            DissonanceComms._capture._micName = Name = string.IsNullOrEmpty(name) ? Name : name;
+            DissonanceComms._capture._microphone = this;
+
             IsRecording = true;
             Status = CaptureStatusType.Playing;
+            DissonanceComms.IsMuted = false;
 
             Log.Debug($"Stream of duration {Stream.GetDuration().ToString(Instance.Config.DurationFormat)} started. Microphone name: \"{name}\", is 3D: {(IsThreeDimensional ? "Yes" : "No")}, channel name: {ChannelName}, priority: {Priority}.");
 
@@ -168,6 +175,12 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// <inheritdoc/>
         public virtual void StopCapture()
         {
+            if (isDisposed)
+                return;
+
+            if (!EqualityComparer<RoomChannel>.Default.Equals(RoomChannel, default))
+                DissonanceComms.RoomChannels.Close(RoomChannel);
+
             IsRecording = false;
             Status = CaptureStatusType.Stopped;
 
@@ -180,6 +193,12 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// <inheritdoc/>
         public virtual void PauseCapture()
         {
+            if (isDisposed)
+                return;
+
+            if (!EqualityComparer<RoomChannel>.Default.Equals(RoomChannel, default))
+                DissonanceComms.RoomChannels.Close(RoomChannel);
+
             IsRecording = false;
             Status = CaptureStatusType.Paused;
 
@@ -187,16 +206,21 @@ namespace VoiceChatManager.Api.Audio.Playback
         }
 
         /// <inheritdoc/>
-        public virtual void RestartCapture(string name)
+        public virtual void RestartCapture(string name, bool force = true)
         {
-            StopCapture();
+            if (isDisposed)
+                return;
+
+            if (force)
+                StopCapture();
+
+            if (DissonanceComms._capture._network == null)
+                DissonanceComms._capture._network = DissonanceComms._net;
+
+            DissonanceComms._capture._micName = Name = string.IsNullOrEmpty(name) ? Name : name;
+            DissonanceComms._capture._microphone = this;
 
             DissonanceComms.ResetMicrophoneCapture();
-            DissonanceComms._capture.Start(DissonanceComms._net, this);
-            DissonanceComms.MicrophoneName = Name = string.IsNullOrEmpty(name) ? Name : name;
-            DissonanceComms.IsMuted = false;
-
-            StartCapture(Name);
         }
 
         /// <inheritdoc/>
@@ -208,6 +232,9 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// <inheritdoc/>
         public virtual bool UpdateSubscribers()
         {
+            if (isDisposed)
+                return true;
+
             if (Stream == null)
             {
                 StopCapture();
@@ -241,8 +268,8 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// </summary>
         public void Dispose()
         {
-            StopCapture();
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -251,13 +278,19 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// <param name="shouldDisposeAllResources">Indicates whether all resources should be disposed or only unmanaged ones.</param>
         protected virtual void Dispose(bool shouldDisposeAllResources)
         {
+            if (isDisposed)
+                return;
+
+            StopCapture();
+
             if (shouldDisposeAllResources)
             {
                 Stream?.Dispose();
                 Stream = null;
             }
 
-            GC.SuppressFinalize(this);
+            isDisposed = true;
+
             Destroy(this);
         }
     }

@@ -24,9 +24,9 @@ namespace VoiceChatManager.Api.Audio.Playback
         CaptureStatusType Status { get; }
 
         /// <summary>
-        /// Gets the streamed microphone priority over other source of audio in the same channel.
+        /// Gets or sets the streamed microphone priority over other source of audio in the same channel.
         /// </summary>
-        ChannelPriority Priority { get; }
+        ChannelPriority Priority { get; set; }
 
         /// <summary>
         /// Gets the streamed microphone name.
@@ -44,9 +44,9 @@ namespace VoiceChatManager.Api.Audio.Playback
         Stream Stream { get; }
 
         /// <summary>
-        /// Gets a value indicating whether the played audio is 3D or not.
+        /// Gets or sets a value indicating whether the played audio is 3D or not.
         /// </summary>
-        bool IsThreeDimensional { get; }
+        bool IsThreeDimensional { get; set; }
 
         /// <summary>
         /// Gets or sets the audio volume.
@@ -97,7 +97,8 @@ namespace VoiceChatManager.Api.Audio.Playback
         /// Restart the microphone capture.
         /// </summary>
         /// <param name="name">The microphone name.</param>
-        void RestartCapture(string name);
+        /// <param name="isForced">Indicates a value whether the restarting of the capture is forced or not.</param>
+        void RestartCapture(string name, bool isForced);
 
         /// <summary>
         /// Releases all resources.

@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ProximityStreamedMicrophone.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -8,20 +8,24 @@
 namespace VoiceChatManager.Api.Audio.Playback
 {
     using System.IO;
+    using Api.Enums;
     using Dissonance;
+    using Exiled.API.Features;
     using UnityEngine;
 
     /// <inheritdoc cref="IProximityStreamedMicrophone"/>
     public class ProximityStreamedMicrophone : StreamedMicrophone, IProximityStreamedMicrophone
     {
+        private float lastSyncedTime;
+
         /// <inheritdoc/>
         public virtual Vector3 Position { get; protected set; }
 
         /// <inheritdoc/>
-        public virtual ReferenceHub Dummy { get; protected set; }
+        public virtual ReferenceHub Dummy => Server.Host.ReferenceHub;
 
         /// <inheritdoc/>
-        public override bool IsThreeDimensional { get; } = true;
+        public override bool IsThreeDimensional { get; set; } = true;
 
         /// <inheritdoc/>
         public override string Name { get; protected set; } = "ProximityStreamedMicrophone";
@@ -44,14 +48,34 @@ namespace VoiceChatManager.Api.Audio.Playback
             return this;
         }
 
-        /// <inheritdoc/>
-        protected override void Dispose(bool shouldDisposeAllResources)
+        /// <summary>
+        /// Syncs the host position to every player near it.
+        /// </summary>
+        private void Update()
         {
-            Destroy(Dummy);
+            if (Dummy == null || Status != CaptureStatusType.Playing)
+                return;
 
-            Dummy = null;
+            if (lastSyncedTime < 0.1)
+            {
+                lastSyncedTime += Time.unscaledDeltaTime;
+                return;
+            }
 
-            base.Dispose(shouldDisposeAllResources);
+            lastSyncedTime = 0;
+
+            Dummy.transform.localScale = Vector3.zero;
+            Dummy.transform.localPosition = Position;
+
+            // Updates the host position to every player in the game near it.
+            // This is the only way I found to sync the host position to other players and bypass local player checks.
+            foreach (var player in Player.List)
+            {
+                if ((Position - player.Position).sqrMagnitude > 375)
+                    continue;
+
+                Server.SendSpawnMessage?.Invoke(null, new object[] { Dummy.networkIdentity, player.Connection });
+            }
         }
     }
 }

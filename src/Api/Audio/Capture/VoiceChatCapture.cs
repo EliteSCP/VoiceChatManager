@@ -80,6 +80,9 @@ namespace VoiceChatManager.Api.Audio.Capture
         /// <inheritdoc/>
         public void Clear()
         {
+            if (isDisposed)
+                throw new ObjectDisposedException(GetType().FullName);
+
             foreach (var recorder in Recorders)
                 recorder.Value.Dispose();
 

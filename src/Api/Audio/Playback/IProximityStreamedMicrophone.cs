@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="IProximityStreamedMicrophone.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -20,7 +20,7 @@ namespace VoiceChatManager.Api.Audio.Playback
         Vector3 Position { get; }
 
         /// <summary>
-        /// Gets the spawned dummy.
+        /// Gets the spawned dummy, which will play the audio.
         /// </summary>
         ReferenceHub Dummy { get; }
     }

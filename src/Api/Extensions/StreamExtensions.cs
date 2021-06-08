@@ -102,7 +102,7 @@ namespace VoiceChatManager.Api.Extensions
             {
                 streamedMicrophone.ChannelName = channelName;
                 streamedMicrophone.Volume = volume;
-                streamedMicrophone.StartCapture(streamedMicrophone.Name);
+                streamedMicrophone.RestartCapture(streamedMicrophone.Name, false);
                 return true;
             }
 
@@ -124,7 +124,7 @@ namespace VoiceChatManager.Api.Extensions
             {
                 streamedMicrophone.ChannelName = channelName;
                 streamedMicrophone.Volume = volume;
-                streamedMicrophone.StartCapture(streamedMicrophone.Name);
+                streamedMicrophone.RestartCapture(streamedMicrophone.Name, false);
                 return true;
             }
 
@@ -217,7 +217,7 @@ namespace VoiceChatManager.Api.Extensions
             }
 
             streamedMicrophone = CachedProperties.DissonanceComms.gameObject.AddComponent<StreamedMicrophone>().Init(stream, volume, channelName, priority);
-            streamedMicrophone.RestartCapture(streamedMicrophone.Name);
+            streamedMicrophone.RestartCapture(streamedMicrophone.Name, true);
             return true;
         }
 
@@ -240,7 +240,7 @@ namespace VoiceChatManager.Api.Extensions
             }
 
             streamedMicrophone = CachedProperties.DissonanceComms.gameObject.AddComponent<ProximityStreamedMicrophone>().Init(position, stream, volume, channelName, priority);
-            streamedMicrophone.RestartCapture(streamedMicrophone.Name);
+            streamedMicrophone.RestartCapture(streamedMicrophone.Name, true);
             return true;
         }
 
@@ -263,7 +263,7 @@ namespace VoiceChatManager.Api.Extensions
             }
 
             streamedMicrophone = CachedProperties.DissonanceComms.gameObject.AddComponent<PlayerProximityStreamedMicrophone>().Init(player, stream, volume, channelName, priority);
-            streamedMicrophone.RestartCapture(streamedMicrophone.Name);
+            streamedMicrophone.RestartCapture(streamedMicrophone.Name, true);
             return true;
         }
 
