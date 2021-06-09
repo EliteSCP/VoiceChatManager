@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------
-// <copyright file="RunAsHost.cs" company="iopietro">
+// <copyright file="RunAsHostFix.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
 // </copyright>
@@ -17,7 +17,7 @@ namespace VoiceChatManager.Patches
     /// Runs the server as host instead of dedicated server, to create a local client to stream audio to players.
     /// </summary>
     [HarmonyPatch(typeof(BaseCommsNetwork<MirrorIgnoranceServer, MirrorIgnoranceClient, MirrorConn, Unit, Unit>), nameof(BaseCommsNetwork<MirrorIgnoranceServer, MirrorIgnoranceClient, MirrorConn, Unit, Unit>.RunAsDedicatedServer))]
-    internal static class RunAsHost
+    internal static class RunAsHostFix
     {
         private static bool Prefix(BaseCommsNetwork<MirrorIgnoranceServer, MirrorIgnoranceClient, MirrorConn, Unit, Unit> __instance)
         {
