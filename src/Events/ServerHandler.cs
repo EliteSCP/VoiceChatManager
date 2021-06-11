@@ -70,7 +70,7 @@ namespace VoiceChatManager.Events
                                 Instance.Config.Converter.ConcurrentLimit,
                                 Instance.Config.Converter.Interval);
 
-                    Task.Run(() => Instance.Converter.StartAsync(Instance.ConverterCancellationTokenSource.Token));
+                    Task.Run(() => Instance.Converter.StartAsync(Instance.ConverterCancellationTokenSource.Token)).ConfigureAwait(false);
                 }
             }
             else
@@ -93,7 +93,7 @@ namespace VoiceChatManager.Events
                         Instance.Config.Recorder.ReadBufferSize,
                         Instance.Config.Recorder.ReadInterval);
 
-                    Task.Run(() => Instance.Capture.StartAsync(Instance.CaptureCancellationTokenSource.Token));
+                    Task.Run(() => Instance.Capture.StartAsync(Instance.CaptureCancellationTokenSource.Token)).ConfigureAwait(false);
                 }
 
                 foreach (var player in Player.List)
@@ -159,8 +159,6 @@ namespace VoiceChatManager.Events
             if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
                 OnReloadedConfigs();
 
-            Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
-
             RoundName = $"Round {DateTime.Now.ToString(Instance.Config.Recorder.DateTimeFormat)}";
 
             if (Instance.Config.Recorder.IsEnabled && Instance.Config.Recorder.KeepLastNumberOfRounds > 0)
@@ -191,6 +189,8 @@ namespace VoiceChatManager.Events
 
             Server.Host.ReferenceHub.characterClassManager.NetworkCurClass = RoleType.ClassD;
             Server.Host.ReferenceHub.characterClassManager.ApplyProperties();
+
+            Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
         }
     }
 }

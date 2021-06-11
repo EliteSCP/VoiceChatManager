@@ -14,6 +14,7 @@ namespace VoiceChatManager.Api.Audio.Capture
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Extensions;
+    using Dasync.Collections;
     using Exiled.API.Features;
     using NAudio.Wave;
     using Xabe.FFmpeg;
@@ -184,11 +185,7 @@ namespace VoiceChatManager.Api.Audio.Capture
         /// <inheritdoc/>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            var parallelOptions = new ParallelOptions()
-            {
-                CancellationToken = cancellationToken,
-            };
-            var filesToConvert = new List<string>(30);
+            var filesToConvert = new List<string>(32);
 
             while (true)
             {
@@ -208,7 +205,8 @@ namespace VoiceChatManager.Api.Audio.Capture
                         break;
                 }
 
-                Parallel.ForEach(filesToConvert, parallelOptions, async path =>
+                await filesToConvert.ParallelForEachAsync(
+                    async path =>
                 {
                     try
                     {
@@ -221,7 +219,9 @@ namespace VoiceChatManager.Api.Audio.Capture
 
                     if (ShouldDeleteAfterConversion && File.Exists(path))
                         File.Delete(path);
-                });
+                },
+                    ConcurrentLimit,
+                    cancellationToken);
 
                 filesToConvert.Clear();
             }

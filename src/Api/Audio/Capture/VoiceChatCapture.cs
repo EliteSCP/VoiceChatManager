@@ -11,6 +11,7 @@ namespace VoiceChatManager.Api.Audio.Capture
     using System.Collections.Concurrent;
     using System.Threading;
     using System.Threading.Tasks;
+    using Dasync.Collections;
     using Dissonance.Audio.Playback;
     using Exiled.API.Features;
     using NAudio.Wave;
@@ -105,7 +106,43 @@ namespace VoiceChatManager.Api.Audio.Capture
             if (isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            await ReadAsync(cancellationToken);
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                await Task.Delay(ReadInterval, cancellationToken);
+
+                if (Recorders.IsEmpty)
+                    continue;
+
+                await Recorders.ParallelForEachAsync(
+                    async recorder =>
+                    {
+                        if (!recorder.Key.HasActiveSession)
+                            return;
+
+                        var samples = new float[ReadBufferSize];
+                        var byteSamples = new byte[ReadBufferSize * 4];
+
+                        try
+                        {
+                            recorder.Key.OnAudioFilterRead(samples, 1);
+
+                            Buffer.BlockCopy(samples, 0, byteSamples, 0, byteSamples.Length);
+
+                            await recorder.Value.WriteAsync(new ArraySegment<byte>(byteSamples), cancellationToken);
+                        }
+                        catch (Exception exception)
+                        {
+                            Log.Error($"[{typeof(VoiceChatCapture).FullName}.{nameof(StartAsync)}] Cannot write voice chat samples of {recorder.Value.Player?.Nickname} ({recorder.Value.Player?.Nickname})!\n{exception}");
+                        }
+                        finally
+                        {
+                            if (!recorder.Key.HasActiveSession)
+                                recorder.Value.Reset(WaveFormat);
+                        }
+                    }, cancellationToken);
+            }
         }
 
         /// <summary>
@@ -121,51 +158,6 @@ namespace VoiceChatManager.Api.Audio.Capture
                 Clear();
 
             isDisposed = true;
-        }
-
-        /// <summary>
-        /// Reads players' voice samples.
-        /// </summary>
-        private async Task ReadAsync(CancellationToken cancellationToken)
-        {
-            var parallelOptions = new ParallelOptions()
-            {
-                CancellationToken = cancellationToken,
-            };
-
-            while (true)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                Parallel.ForEach(Recorders, parallelOptions, async recorder =>
-                {
-                    if (!recorder.Key.HasActiveSession)
-                        return;
-
-                    var samples = new float[ReadBufferSize];
-                    var byteSamples = new byte[ReadBufferSize * 4];
-
-                    try
-                    {
-                        recorder.Key.OnAudioFilterRead(samples, 1);
-
-                        Buffer.BlockCopy(samples, 0, byteSamples, 0, byteSamples.Length);
-
-                        await recorder.Value.WriteAsync(new ArraySegment<byte>(byteSamples), cancellationToken);
-                    }
-                    catch (Exception exception)
-                    {
-                        Log.Error($"[{typeof(VoiceChatCapture).FullName}.{nameof(ReadAsync)}] Cannot write voice chat samples of {recorder.Value.Player?.Nickname} ({recorder.Value.Player?.Nickname})!\n{exception}");
-                    }
-                    finally
-                    {
-                        if (!recorder.Key.HasActiveSession)
-                            recorder.Value.Reset(WaveFormat);
-                    }
-                });
-
-                await Task.Delay(ReadInterval, cancellationToken);
-            }
         }
     }
 }
