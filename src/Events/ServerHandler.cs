@@ -8,8 +8,9 @@
 namespace VoiceChatManager.Events
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Concurrent;
     using System.IO;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Audio.Capture;
@@ -37,7 +38,7 @@ namespace VoiceChatManager.Events
         /// <summary>
         /// Gets the round paths queue.
         /// </summary>
-        internal Queue<string> RoundPaths { get; private set; } = new Queue<string>(70);
+        internal ConcurrentQueue<string> RoundPaths { get; private set; } = new ConcurrentQueue<string>();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnReloadedConfigs"/>
         public void OnReloadedConfigs()
@@ -79,12 +80,17 @@ namespace VoiceChatManager.Events
                 Instance.ConverterCancellationTokenSource?.Dispose();
                 Instance.ConverterCancellationTokenSource = null;
 
-                Instance.Converter?.Clear();
+                Instance.Converter?.Queue.Clear();
                 Instance.Converter = null;
             }
 
             if (Instance.Config.Recorder.IsEnabled)
             {
+                RoundPaths.Clear();
+
+                foreach (var directory in new DirectoryInfo(Instance.Config.Recorder.RootDirectoryPath).GetDirectories().OrderBy(info => info.CreationTime))
+                    RoundPaths.Enqueue(directory.FullName);
+
                 if (Instance.CaptureCancellationTokenSource == null)
                 {
                     Instance.CaptureCancellationTokenSource = new CancellationTokenSource();
@@ -163,14 +169,13 @@ namespace VoiceChatManager.Events
 
             if (Instance.Config.Recorder.IsEnabled && Instance.Config.Recorder.KeepLastNumberOfRounds > 0)
             {
-                if (RoundPaths.Count > Instance.Config.Recorder.KeepLastNumberOfRounds
-                    && RoundPaths.TryDequeue(out var path)
-                    && Directory.Exists(path))
+                Task.Run(() =>
                 {
-                    Task.Run(() => Directory.Delete(path, true));
-                }
+                    while (RoundPaths.Count >= Instance.Config.Recorder.KeepLastNumberOfRounds && RoundPaths.TryDequeue(out var path) && Directory.Exists(path))
+                        Directory.Delete(path, true);
 
-                RoundPaths.Enqueue(Path.Combine(Instance.Config.Recorder.RootDirectoryPath, RoundName));
+                    RoundPaths.Enqueue(Path.Combine(Instance.Config.Recorder.RootDirectoryPath, RoundName));
+                });
             }
         }
 

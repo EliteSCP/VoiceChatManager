@@ -10,6 +10,7 @@ namespace VoiceChatManager
     using System;
     using System.Threading;
     using Api.Audio.Capture;
+    using Api.Extensions;
     using Api.Utilities;
     using Configs;
     using Events;
@@ -112,7 +113,7 @@ namespace VoiceChatManager
             ConverterCancellationTokenSource?.Dispose();
             ConverterCancellationTokenSource = null;
 
-            Converter?.Clear();
+            Converter?.Queue.Clear();
             Converter = null;
 
             Exiled.Events.Handlers.Player.Verified -= PlayerHandler.OnVerified;

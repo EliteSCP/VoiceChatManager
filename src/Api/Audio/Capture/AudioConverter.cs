@@ -14,7 +14,6 @@ namespace VoiceChatManager.Api.Audio.Capture
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Extensions;
-    using Dasync.Collections;
     using Exiled.API.Features;
     using NAudio.Wave;
     using Xabe.FFmpeg;
@@ -173,13 +172,6 @@ namespace VoiceChatManager.Api.Audio.Capture
         public ConcurrentQueue<string> Queue { get; } = new ConcurrentQueue<string>();
 
         /// <inheritdoc/>
-        public void Clear()
-        {
-            for (int i = 0; i < Queue.Count; i++)
-                Queue.TryDequeue(out _);
-        }
-
-        /// <inheritdoc/>
         public async Task StartAsync() => await StartAsync(default);
 
         /// <inheritdoc/>
@@ -207,21 +199,21 @@ namespace VoiceChatManager.Api.Audio.Capture
 
                 await filesToConvert.ParallelForEachAsync(
                     async path =>
-                {
-                    try
                     {
-                        await path.ConvertFileAsync(WaveFormat.SampleRate, WaveFormat.Channels, Speed, FileFormat, Preset, extraParameters: $"-ab {Bitrate}k");
-                    }
-                    catch (Exception exception)
-                    {
-                        Log.Error($"{typeof(AudioConverter).FullName}{nameof(StartAsync)} Failed to convert \"{path}\", error:\n{exception}");
-                    }
+                        try
+                        {
+                            await path.ConvertFileAsync(WaveFormat.SampleRate, WaveFormat.Channels, Speed, FileFormat, Preset, extraParameters: $"-ab {Bitrate}k");
+                        }
+                        catch (Exception exception)
+                        {
+                            Log.Error($"{typeof(AudioConverter).FullName}{nameof(StartAsync)} Failed to convert \"{path}\", error:\n{exception}");
+                        }
 
-                    if (ShouldDeleteAfterConversion && File.Exists(path))
-                        File.Delete(path);
-                },
-                    ConcurrentLimit,
-                    cancellationToken);
+                        if (ShouldDeleteAfterConversion && File.Exists(path))
+                            File.Delete(path);
+                    },
+                    cancellationToken,
+                    ConcurrentLimit);
 
                 filesToConvert.Clear();
             }

@@ -64,11 +64,6 @@ namespace VoiceChatManager.Api.Audio.Capture
         ConcurrentQueue<string> Queue { get; }
 
         /// <summary>
-        /// Clears the conversion process.
-        /// </summary>
-        void Clear();
-
-        /// <summary>
         /// Starts the conversion.
         /// </summary>
         /// <returns>Returns a <see cref="Task{TResult}"/>.</returns>

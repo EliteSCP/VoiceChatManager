@@ -11,7 +11,7 @@ namespace VoiceChatManager.Api.Audio.Capture
     using System.Collections.Concurrent;
     using System.Threading;
     using System.Threading.Tasks;
-    using Dasync.Collections;
+    using Api.Extensions;
     using Dissonance.Audio.Playback;
     using Exiled.API.Features;
     using NAudio.Wave;
@@ -121,6 +121,7 @@ namespace VoiceChatManager.Api.Audio.Capture
                         if (!recorder.Key.HasActiveSession)
                             return;
 
+                        // TODO: Can be optimized by using ArrayPool
                         var samples = new float[ReadBufferSize];
                         var byteSamples = new byte[ReadBufferSize * 4];
 
@@ -141,7 +142,9 @@ namespace VoiceChatManager.Api.Audio.Capture
                             if (!recorder.Key.HasActiveSession)
                                 recorder.Value.Reset(WaveFormat);
                         }
-                    }, cancellationToken);
+                    },
+                    cancellationToken,
+                    Environment.ProcessorCount - 1);
             }
         }
 

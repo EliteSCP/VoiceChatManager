@@ -56,7 +56,8 @@ namespace VoiceChatManager.Api.Audio.Capture
         {
             await _outStream.WriteAsync(samples.Array, samples.Offset, samples.Count, cancellationToken);
 
-            _dataChunkSize += samples.Count;
+            lock (_outStream)
+                _dataChunkSize += samples.Count;
         }
     }
 }

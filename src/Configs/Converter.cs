@@ -25,19 +25,19 @@ namespace VoiceChatManager.Configs
         public bool IsEnabled { get; set; } = true;
 
         /// <inheritdoc cref="IAudioConverter.ShouldDeleteAfterConversion"/>
-        [Description("Indicates whether the file should be deleted or not after being converted")]
+        [Description("Indicates whether the file should be deleted or not after being converted.")]
         public bool ShouldDeleteAfterConversion { get; private set; } = true;
 
         /// <summary>
         /// Gets the converted audio sample rate.
         /// </summary>
-        [Description("The converted audio sample rate")]
+        [Description("The converted audio sample rate.")]
         public int SampleRate { get; private set; } = 48000;
 
         /// <summary>
         /// Gets the converted audio number of channels.
         /// </summary>
-        [Description("The converted audio number of channels")]
+        [Description("The converted audio number of channels.")]
         public int Channels { get; private set; } = 1;
 
         /// <inheritdoc cref="IAudioConverter.FileFormat"/>
@@ -50,7 +50,7 @@ namespace VoiceChatManager.Configs
 
         /// <inheritdoc cref="IAudioConverter.Preset"/>
         [Description("The convertion preset. Available: VerySlow, Slower, Slow, Medium, Fast, Faster, VeryFast, SuperFast, UltraFast")]
-        public ConversionPreset Preset { get; private set; } = ConversionPreset.SuperFast;
+        public ConversionPreset Preset { get; private set; } = ConversionPreset.UltraFast;
 
         /// <inheritdoc cref="IAudioConverter.Bitrate"/>
         [Description("The converted audio bitrate, in kbps. The lower the bitrate, the less space will be occupied.")]
@@ -58,7 +58,7 @@ namespace VoiceChatManager.Configs
 
         /// <inheritdoc cref="IAudioConverter.ConcurrentLimit"/>
         [Description("The maximum amount of conversions that can be done concurrently.")]
-        public int ConcurrentLimit { get; private set; } = Environment.ProcessorCount;
+        public int ConcurrentLimit { get; private set; } = Environment.ProcessorCount - 1;
 
         /// <inheritdoc cref="IAudioConverter.Interval"/>
         [Description("The conversion interval, in milliseconds.")]
