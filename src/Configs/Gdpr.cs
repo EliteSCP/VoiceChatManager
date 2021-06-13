@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="Gdpr.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -25,7 +25,7 @@ namespace VoiceChatManager.Configs
         /// Gets or sets a value indicating whether the European Union GDPR should be respected or not.
         /// </summary>
         [Description("Indicates whether the European Union GDPR should be respected or not")]
-        public bool ShouldBeRespected { get; set; }
+        public bool IsCompliant { get; set; }
 
         /// <summary>
         /// Gets the hashset of players who have accepted to be be voice recorded, based on their Steam ID/Discord ID.

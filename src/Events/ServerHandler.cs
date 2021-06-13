@@ -14,6 +14,7 @@ namespace VoiceChatManager.Events
     using System.Threading;
     using System.Threading.Tasks;
     using Api.Audio.Capture;
+    using Api.Audio.Playback;
     using Api.Extensions;
     using Dissonance;
     using Dissonance.Audio.Playback;
@@ -104,8 +105,8 @@ namespace VoiceChatManager.Events
 
                 foreach (var player in Player.List)
                 {
-                    if (!Instance.Gdpr.ShouldBeRespected ||
-                        (Instance.Gdpr.ShouldBeRespected && (Instance.Gdpr.CanBeVoiceRecordedPlayerUserIds?.Contains(player.UserId) ?? false)))
+                    if (!Instance.Gdpr.IsCompliant ||
+                        (Instance.Gdpr.IsCompliant && (Instance.Gdpr.CanBeVoiceRecordedPlayerUserIds?.Contains(player.UserId) ?? false)))
                     {
                         player.SessionVariables["canBeVoiceRecorded"] = true;
 
@@ -180,7 +181,15 @@ namespace VoiceChatManager.Events
         }
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRestartingRound"/>
-        public void OnRestartingRound() => Instance.Capture?.Clear();
+        public void OnRestartingRound()
+        {
+            foreach (var streamedMicrophone in StreamedMicrophone.List)
+                streamedMicrophone.Dispose();
+
+            StreamedMicrophone.List.Clear();
+
+            Instance.Capture?.Clear();
+        }
 
         /// <summary>
         /// Inits the host, to play positional audio.

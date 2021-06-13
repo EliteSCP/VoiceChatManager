@@ -30,8 +30,8 @@ namespace VoiceChatManager.Events
             samplePlaybackComponent.MultiplyBySource = false;
 
             if (Instance.Config.Recorder.IsEnabled &&
-                (!Instance.Gdpr.ShouldBeRespected ||
-                (Instance.Gdpr.ShouldBeRespected && (Instance.Gdpr.CanBeVoiceRecordedPlayerUserIds?.Contains(ev.Player.UserId) ?? false))))
+                (!Instance.Gdpr.IsCompliant ||
+                (Instance.Gdpr.IsCompliant && (Instance.Gdpr.CanBeVoiceRecordedPlayerUserIds?.Contains(ev.Player.UserId) ?? false))))
             {
                 ev.Player.SessionVariables["canBeVoiceRecorded"] = true;
 

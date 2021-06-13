@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ClearCommand.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
