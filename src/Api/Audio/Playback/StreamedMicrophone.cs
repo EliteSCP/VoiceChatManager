@@ -206,12 +206,12 @@ namespace VoiceChatManager.Api.Audio.Playback
         }
 
         /// <inheritdoc/>
-        public virtual void RestartCapture(string name, bool force = true)
+        public virtual void RestartCapture(string name, bool isForced = true)
         {
             if (isDisposed)
                 throw new ObjectDisposedException(GetType().FullName);
 
-            if (force)
+            if (isForced)
                 StopCapture();
 
             if (DissonanceComms._capture._network == null)
