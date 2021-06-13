@@ -62,6 +62,6 @@ namespace VoiceChatManager.Configs
 
         /// <inheritdoc cref="IAudioConverter.Interval"/>
         [Description("The conversion interval, in milliseconds.")]
-        public int Interval { get; private set; } = 1000;
+        public int Interval { get; private set; } = 0;
     }
 }
