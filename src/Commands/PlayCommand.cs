@@ -50,7 +50,7 @@ namespace VoiceChatManager.Commands
         {
             if (arguments.Count < 2 || arguments.Count > 6 || arguments.Count == 5)
             {
-                response = "\nvoicechatmanager play [File alias/File path] [Volume(0-100)]" +
+                response = "\nvoicechatmanager play [File alias/File path] [Volume (0-100)]" +
                     "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] [Channel name (SCP, Intercom, Proximity, Ghost)]" +
                     "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [Player ID/Player Name/Player]" +
                     "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [X] [Y] [Z]";
