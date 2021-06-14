@@ -176,7 +176,7 @@ namespace VoiceChatManager.Events
                         Directory.Delete(path, true);
 
                     RoundPaths.Enqueue(Path.Combine(Instance.Config.Recorder.RootDirectoryPath, RoundName));
-                });
+                }).ConfigureAwait(false);
             }
         }
 

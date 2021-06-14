@@ -160,7 +160,7 @@ namespace VoiceChatManager.Api.Audio.Capture
             if (Writer == null && Player != null && Player.GameObject != null)
                 Writer = new CustomWaveWriter(Path.Combine(RootDirectoryPath, $"{Player.Nickname} ({Player.UserId})", $"({Player.Id}) [{Player.Role}] {DateTime.Now.ToString(DateTimeFormat)}"), WaveFormat);
 
-            await Writer.WriteSamplesAsync(samples, cancellationToken);
+            await Writer.WriteSamplesAsync(samples, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
