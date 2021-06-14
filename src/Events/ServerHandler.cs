@@ -89,8 +89,11 @@ namespace VoiceChatManager.Events
             {
                 RoundPaths.Clear();
 
-                foreach (var directory in new DirectoryInfo(Instance.Config.Recorder.RootDirectoryPath).GetDirectories().OrderBy(info => info.CreationTime))
-                    RoundPaths.Enqueue(directory.FullName);
+                if (Directory.Exists(Instance.Config.Recorder.RootDirectoryPath))
+                {
+                    foreach (var directory in new DirectoryInfo(Instance.Config.Recorder.RootDirectoryPath).GetDirectories().OrderBy(info => info.CreationTime))
+                        RoundPaths.Enqueue(directory.FullName);
+                }
 
                 if (Instance.CaptureCancellationTokenSource == null)
                 {
