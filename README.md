@@ -32,4 +32,6 @@ FFmpeg is very **CPU consuming** and it opens a process for every conversion it 
 ## WARNING!
 Read your local law regarding voice recording before activating the voice chat recorder and make sure to set `is_compliant` config to true if your server is hosted in the EU or people from EU join your server.
 
+Playing earrapes is against [VSR](https://scpslgame.com/Verified_server_rules.pdf) read it before using this plugin.
+
 Inspired by [CommsHack](https://github.com/VirtualBrightPlayz/CommsHack).
