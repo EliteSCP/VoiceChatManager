@@ -1,0 +1,99 @@
+# Version: 2.1.0 (Using https://semver.org/)
+# Updated: 2021-03-03
+# See https://github.com/RehanSaeed/EditorConfig/releases for release notes.
+# See https://github.com/RehanSaeed/EditorConfig for updates to this file.
+# See http://EditorConfig.org for more information about .editorconfig files.
+
+##########################################
+# Common Settings
+##########################################
+
+# This file is the top-most EditorConfig file
+root = true
+
+# All Files
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+##########################################
+# File Extension Settings
+##########################################
+
+# Visual Studio Solution Files
+[*.sln]
+indent_style = tab
+
+# Visual Studio XML Project Files
+[*.{csproj,vbproj,vcxproj.filters,proj,projitems,shproj}]
+indent_size = 2
+
+# XML Configuration Files
+[*.{xml,config,props,targets,nuspec,resx,ruleset,vsixmanifest,vsct}]
+indent_size = 2
+
+# JSON Files
+[*.{json,json5,webmanifest}]
+indent_size = 2
+
+# YAML Files
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown Files
+[*.md]
+trim_trailing_whitespace = false
+
+# Web Files
+[*.{htm,html,js,jsm,ts,tsx,css,sass,scss,less,svg,vue}]
+indent_size = 2
+
+# Batch Files
+[*.{cmd,bat}]
+end_of_line = crlf
+
+# Bash Files
+[*.sh]
+end_of_line = lf
+
+# Makefiles
+[Makefile]
+indent_style = tab
+
+##########################################
+# License
+##########################################
+# The following applies as to the .editorconfig file ONLY, and is
+# included below for reference, per the requirements of the license
+# corresponding to this .editorconfig file.
+# See: https://github.com/RehanSaeed/EditorConfig
+#
+# MIT License
+#
+# Copyright (c) 2017-2019 Muhammad Rehan Saeed
+# Copyright (c) 2019 Henry Gabryjelski
+#
+# Permission is hereby granted, free of charge, to any
+# person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the
+# Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit
+# persons to whom the Software is furnished to do so, subject
+# to the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+##########################################

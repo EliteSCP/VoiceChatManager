@@ -1,0 +1,7 @@
+﻿<RuleSet Name="Voice Chat Manager Rule Set" Description="Code analysis rules for VoiceChatManager" ToolsVersion="16.0">
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1101" Action="None" />
+    <Rule Id="SA1135" Action="None" />
+    <Rule Id="SA1503" Action="None" />
+  </Rules>
+</RuleSet>
