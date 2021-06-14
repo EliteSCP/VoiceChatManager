@@ -172,7 +172,7 @@ namespace VoiceChatManager.Api.Audio.Capture
         public ConcurrentQueue<string> Queue { get; } = new ConcurrentQueue<string>();
 
         /// <inheritdoc/>
-        public async Task StartAsync() => await StartAsync(default);
+        public async Task StartAsync() => await StartAsync(default).ConfigureAwait(false);
 
         /// <inheritdoc/>
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -183,7 +183,7 @@ namespace VoiceChatManager.Api.Audio.Capture
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await Task.Delay(Interval, cancellationToken);
+                await Task.Delay(Interval, cancellationToken).ConfigureAwait(false);
 
                 if (Queue.IsEmpty)
                     continue;
@@ -202,7 +202,7 @@ namespace VoiceChatManager.Api.Audio.Capture
                     {
                         try
                         {
-                            await path.ConvertFileAsync(WaveFormat.SampleRate, WaveFormat.Channels, Speed, FileFormat, Preset, extraParameters: $"-ab {Bitrate}k");
+                            await path.ConvertFileAsync(WaveFormat.SampleRate, WaveFormat.Channels, Speed, FileFormat, Preset, extraParameters: $"-ab {Bitrate}k").ConfigureAwait(false);
                         }
                         catch (Exception exception)
                         {
@@ -213,7 +213,7 @@ namespace VoiceChatManager.Api.Audio.Capture
                             File.Delete(path);
                     },
                     cancellationToken,
-                    ConcurrentLimit);
+                    ConcurrentLimit).ConfigureAwait(false);
 
                 filesToConvert.Clear();
             }

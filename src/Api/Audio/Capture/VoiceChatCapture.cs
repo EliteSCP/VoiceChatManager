@@ -98,7 +98,7 @@ namespace VoiceChatManager.Api.Audio.Capture
         }
 
         /// <inheritdoc/>
-        public async Task StartAsync() => await StartAsync(default);
+        public async Task StartAsync() => await StartAsync(default).ConfigureAwait(false);
 
         /// <inheritdoc/>
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -110,7 +110,7 @@ namespace VoiceChatManager.Api.Audio.Capture
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await Task.Delay(ReadInterval, cancellationToken);
+                await Task.Delay(ReadInterval, cancellationToken).ConfigureAwait(false);
 
                 if (Recorders.IsEmpty)
                     continue;
@@ -131,7 +131,7 @@ namespace VoiceChatManager.Api.Audio.Capture
 
                             Buffer.BlockCopy(samples, 0, byteSamples, 0, byteSamples.Length);
 
-                            await recorder.Value.WriteAsync(new ArraySegment<byte>(byteSamples), cancellationToken);
+                            await recorder.Value.WriteAsync(new ArraySegment<byte>(byteSamples), cancellationToken).ConfigureAwait(false);
                         }
                         catch (Exception exception)
                         {
@@ -144,7 +144,7 @@ namespace VoiceChatManager.Api.Audio.Capture
                         }
                     },
                     cancellationToken,
-                    Environment.ProcessorCount - 1);
+                    Environment.ProcessorCount - 1).ConfigureAwait(false);
             }
         }
 
