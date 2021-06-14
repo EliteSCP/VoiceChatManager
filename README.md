@@ -27,6 +27,9 @@ An SCP: SL plugin which permits to record players' voice chat and play custom au
 
 ## Limitations
 Only **one** custom audio can be played at the same time.
+FFmpeg is very **CPU consuming** and it opens a process for every conversion it does, so make sure your server is good enough before enabling the audio converter, otherwise it could create some lag.
 
 ## WARNING!
 Read your local law regarding voice recording before activating the voice chat recorder and make sure to set `is_compliant` config to true if your server is hosted in the EU or people from EU join your server.
+
+Inspired by [CommsHack](https://github.com/VirtualBrightPlayz/CommsHack).
