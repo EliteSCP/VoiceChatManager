@@ -16,7 +16,7 @@ An SCP: SL plugin which permits to record players' voice chat and play custom au
 | Command | Description | Arguments | Permission | Example |
 | --- | --- | --- | --- | --- |
 | vcm stop | Stops an audio file from playing. | **[Preset name/File name/File path/Audio ID]** | **voicechatmanager.stop** | **vcm stop 0** |
-| vcm play | Plays an audio file on the intercom channel. | **[File alias/File path] [Volume (0-100)]** | **voicechatmanager.start** | **vcm play C:\AmongUsMainTheme.mp3 100**|
+| vcm play | Plays an audio file on the intercom channel. | **[File alias/File path] [Volume (0-100)]** | **voicechatmanager.play** | **vcm play C:\AmongUsMainTheme.mp3 100**|
 | vcm play | Plays an audio file on a specific channel | **[File alias/File path] [Volume (0-100)] [Channel name (SCP, Intercom, Proximity, Ghost)]** | // | **vcm play C:\AmongUsMainTheme.mp3 100 SCP** |
 | vcm play | Plays an audio file in the proximity of a specific player | **[File alias/File path] [Volume (0-100)] proximity [Player ID/Player Name/Player]** | // | **vcm play C:\Users\Example\AmongUsMainThemeBassBoosted.mp3 100 proximity iopietro** |
 | vcmp play | Plays an audio file in the proximity of a specific position. | **[File alias/File path] [Volume (0-100)] proximity [X] [Y] [Z]** | // | **vcm play C:\Users\Example\AmongUsMainThemeBassBoosted.mp3 100 proximity 100 -50 33** |
