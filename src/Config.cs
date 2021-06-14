@@ -51,9 +51,9 @@ namespace VoiceChatManager
         };
 
         /// <summary>
-        /// Gets the directory in which ffmpeg.exe is located.
+        /// Gets the directory in which ffmpeg.exe (Windows) or ffmpeg (linux) is located.
         /// </summary>
-        [Description("The directory in which ffmpeg.exe is located, leave it empty or null if you don't want to use it")]
+        [Description("The directory in which ffmpeg.exe (Windows) or ffmpeg (linux) is located, leave it empty or null if you don't want to use it")]
         public string FFmpegDirectoryPath { get; private set; }
 
         /// <summary>
