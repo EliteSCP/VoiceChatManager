@@ -4,6 +4,8 @@ An SCP: SL plugin which permits to record players' voice chat and play custom au
 ## Minimum requirements
 [EXILED](https://github.com/Exiled-Team/EXILED/tags) **2.8.0+**
 
+[FFmpeg](https://www.ffmpeg.org/download.html) (Optional, only if you want to directly convert audios from the plugin)
+
 ### Player commands
 | Command | Description |
 | --- | --- |
