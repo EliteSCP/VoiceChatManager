@@ -1,5 +1,5 @@
 # VoiceChatManager
-An SCP: SL plugin which permits to record players' voice chat and play custom audios globally or in the proximity of a specific position or player.
+An SCP: SL plugin which allows to record players' voice chat and play custom audios globally or in the proximity of a specific position or player.
 
 ## Minimum requirements
 [EXILED](https://github.com/Exiled-Team/EXILED/tags) **2.8.0+**
