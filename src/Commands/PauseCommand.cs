@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PauseCommand.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -29,7 +29,7 @@ namespace VoiceChatManager.Commands
         public string[] Aliases { get; } = { "pa" };
 
         /// <inheritdoc/>
-        public string Description { get; } = "Stops an audio file from playing.";
+        public string Description { get; } = "Pause an audio file from playing.";
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)

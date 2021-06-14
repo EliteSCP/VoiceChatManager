@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="AudiosCommand.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -34,20 +34,20 @@ namespace VoiceChatManager.Commands.List
         public string[] Aliases { get; } = { "audio", "a", "au" };
 
         /// <inheritdoc/>
-        public string Description { get; } = "Gets the list of playing audio.";
+        public string Description { get; } = "Gets the list of playing/paused/stopped audios.";
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (arguments.Count != 0)
             {
-                response = "voicechatmanager list playing";
+                response = "voicechatmanager list audio";
                 return false;
             }
 
-            if (!sender.CheckPermission("voicechatmanager.list.playing"))
+            if (!sender.CheckPermission("voicechatmanager.list.audio"))
             {
-                response = "Not enough permissions to run this command!\nRequired: voicechatmanager.list.playing";
+                response = "Not enough permissions to run this command!\nRequired: voicechatmanager.list.audio";
                 return false;
             }
 

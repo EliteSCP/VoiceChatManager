@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="PresetsCommand.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -31,7 +31,7 @@ namespace VoiceChatManager.Commands.List
         public string[] Aliases { get; } = { "p", "pr", "pre" };
 
         /// <inheritdoc/>
-        public string Description { get; } = "Plays a global audio, in the specified channel.";
+        public string Description { get; } = "Gets the list of audio presets.";
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
