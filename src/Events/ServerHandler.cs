@@ -163,7 +163,7 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnWaitingForPlayers"/>
         public void OnWaitingForPlayers()
         {
-            InitHost();
+            Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
 
             // It doesn't get invoked by Exiled
             if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
@@ -192,22 +192,6 @@ namespace VoiceChatManager.Events
             StreamedMicrophone.List.Clear();
 
             Instance.Capture?.Clear();
-        }
-
-        /// <summary>
-        /// Inits the host, to play positional audio.
-        /// </summary>
-        private void InitHost()
-        {
-            Server.Host.GameObject.transform.localScale = Vector3.zero;
-            Server.Host.IsGodModeEnabled = true;
-
-            NetworkServer.Spawn(Server.Host.GameObject);
-
-            Server.Host.ReferenceHub.characterClassManager.NetworkCurClass = RoleType.ClassD;
-            Server.Host.ReferenceHub.characterClassManager.ApplyProperties();
-
-            Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
         }
     }
 }
