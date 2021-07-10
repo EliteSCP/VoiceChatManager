@@ -1,0 +1,9 @@
+<PropertyGroup>  
+  <Authors>iopietro</Authors>
+  <Version>1.1.0-beta</Version>
+  <Copyright>Copyright © $(Authors) 2021</Copyright>
+  <RepositoryType>Git</RepositoryType>
+  <RepositoryUrl>https://github.com/iopietro/VoiceChatManager</RepositoryUrl>
+  <PackageProjectUrl>https://github.com/iopietro/VoiceChatManager</PackageProjectUrl>
+  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+</PropertyGroup>
