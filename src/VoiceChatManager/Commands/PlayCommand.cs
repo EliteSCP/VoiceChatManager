@@ -58,9 +58,9 @@ namespace VoiceChatManager.Commands
                 return false;
             }
 
-            if (!sender.CheckPermission("voicechatmanager.play"))
+            if (!sender.CheckPermission("vcm.play"))
             {
-                response = "Not enough permissions to run this command!\nRequired: voicechatmanager.play";
+                response = "Not enough permissions to run this command!\nRequired: vcm.play";
                 return false;
             }
 
@@ -81,7 +81,7 @@ namespace VoiceChatManager.Commands
             {
                 if (!VoiceChatManager.Instance.Config.IsFFmpegInstalled)
                 {
-                    response = $"Your FFmpeg directory isn't set up properly, {path} won't be converted and played.";
+                    response = $"Your FFmpeg directory isn't set up properly, \"{path}\" won't be converted and played.";
                     return false;
                 }
 

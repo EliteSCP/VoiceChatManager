@@ -40,9 +40,9 @@ namespace VoiceChatManager.Commands
                 return false;
             }
 
-            if (!sender.CheckPermission("voicechatmanager.stop"))
+            if (!sender.CheckPermission("vcm.stop"))
             {
-                response = "Not enough permissions to run this command!\nRequired: voicechatmanager.stop";
+                response = "Not enough permissions to run this command!\nRequired: vcm.stop";
                 return false;
             }
 

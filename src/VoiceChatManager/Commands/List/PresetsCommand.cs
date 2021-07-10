@@ -36,15 +36,9 @@ namespace VoiceChatManager.Commands.List
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            if (arguments.Count != 0)
+            if (!sender.CheckPermission("vcm.list.presets"))
             {
-                response = "voicechatmanager list presets";
-                return false;
-            }
-
-            if (!sender.CheckPermission("voicechatmanager.list.presets"))
-            {
-                response = "Not enough permissions to run this command!\nRequired: voicechatmanager.list.presets";
+                response = "Not enough permissions to run this command!\nRequired: vcm.list.presets";
                 return false;
             }
 
