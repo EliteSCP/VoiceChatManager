@@ -42,7 +42,9 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnReloadedConfigs"/>
         public void OnReloadedConfigs()
         {
-            if (Directory.Exists(Instance.Config.FFmpegDirectoryPath))
+            Instance.Config.IsFFmpegInstalled = Directory.Exists(Instance.Config.FFmpegDirectoryPath);
+
+            if (Instance.Config.IsFFmpegInstalled)
             {
                 FFmpeg.SetExecutablesPath(Instance.Config.FFmpegDirectoryPath);
             }

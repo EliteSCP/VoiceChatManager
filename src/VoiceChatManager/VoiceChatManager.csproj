@@ -18,13 +18,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VoiceChatManager.Core\VoiceChatManager.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Assembly-CSharp-firstpass" HintPath="$(VCM_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="false" />
     <Reference Include="Assembly-CSharp-Publicized" HintPath="$(VCM_REFERENCES)\Assembly-CSharp-Publicized.dll" Private="false" />
     <Reference Include="CommandSystem.Core" HintPath="$(VCM_REFERENCES)\CommandSystem.Core.dll" Private="false" />
     <Reference Include="DissonanceVoip_publicized" HintPath="$(VCM_REFERENCES)\DissonanceVoip_publicized.dll" Private="false" />
     <Reference Include="Mirror_publicized" HintPath="$(VCM_REFERENCES)\Mirror_publicized.dll" Private="false" />
     <Reference Include="NorthwoodLib" HintPath="$(VCM_REFERENCES)\NorthwoodLib.dll" Private="false" />
-    <Reference Include="UnityEngine" HintPath="$(VCM_REFERENCES)\UnityEngine.dll" Private="false" />
     <Reference Include="UnityEngine.AudioModule" HintPath="$(VCM_REFERENCES)\UnityEngine.AudioModule.dll" Private="false" />
     <Reference Include="UnityEngine.CoreModule" HintPath="$(VCM_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
     <Reference Include="UnityEngine.PhysicsModule" HintPath="$(VCM_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
@@ -92,9 +95,5 @@
     <PackageReference Include="System.Xml.XDocument" Version="4.3.0" />
     <PackageReference Include="Xabe.FFmpeg" Version="5.0.2" />
     <PackageReference Include="YamlDotNet" Version="9.1.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\VoiceChatManager.Core\VoiceChatManager.Core.csproj" />
   </ItemGroup>
 </Project>
