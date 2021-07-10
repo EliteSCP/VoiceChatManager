@@ -17,7 +17,6 @@ namespace VoiceChatManager.Events
     using Core.Audio.Playback;
     using Core.Extensions;
     using Dissonance;
-    using Dissonance.Audio.Playback;
     using Exiled.API.Features;
     using NAudio.Wave;
     using Xabe.FFmpeg;

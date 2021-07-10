@@ -11,7 +11,6 @@ namespace VoiceChatManager.Core.Audio.Capture
     using System.Collections.Concurrent;
     using System.Threading;
     using System.Threading.Tasks;
-    using Dissonance.Audio.Playback;
     using NAudio.Wave;
 
     /// <summary>

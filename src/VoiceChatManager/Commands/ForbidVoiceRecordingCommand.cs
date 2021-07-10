@@ -10,7 +10,6 @@ namespace VoiceChatManager.Commands
     using System;
     using CommandSystem;
     using Core.Audio.Capture;
-    using Dissonance.Audio.Playback;
     using Exiled.API.Features;
 
     /// <inheritdoc/>

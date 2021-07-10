@@ -9,8 +9,6 @@ namespace VoiceChatManager.Events
 {
     using System.IO;
     using Core.Audio.Capture;
-    using Core.Extensions;
-    using Dissonance.Audio.Playback;
     using Exiled.API.Features;
     using Exiled.Events.EventArgs;
     using NAudio.Wave;
