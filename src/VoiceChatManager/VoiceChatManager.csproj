@@ -1,15 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk"> 
+  <PropertyGroup>
+    <AssemblyName>VoiceChatManager</AssemblyName>
+  </PropertyGroup>
+
   <Import Project="..\..\VoiceChatManager.props" />
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>$(MSBuildThisFileDirectory)bin\Release\VoiceChatManager.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VoiceChatManager.Core\VoiceChatManager.Core.csproj" Private="false" />

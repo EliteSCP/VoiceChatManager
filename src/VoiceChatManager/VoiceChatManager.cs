@@ -36,6 +36,10 @@ namespace VoiceChatManager
         /// </summary>
         public static VoiceChatManager Instance => InstanceValue;
 
+        /// Forced to set the name, it's apparently bugged when using the class that supports translations.
+        /// <inheritdoc/>
+        public override string Name { get; } = "VoiceChatManager";
+
         /// <inheritdoc/>
         public override Version RequiredExiledVersion { get; } = new Version(2, 10, 0);
 
