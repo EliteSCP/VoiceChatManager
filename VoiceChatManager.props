@@ -1,9 +1,20 @@
-<PropertyGroup>  
-  <Authors>iopietro</Authors>
-  <Version>1.1.0-beta</Version>
-  <Copyright>Copyright © $(Authors) 2021</Copyright>
-  <RepositoryType>Git</RepositoryType>
-  <RepositoryUrl>https://github.com/iopietro/VoiceChatManager</RepositoryUrl>
-  <PackageProjectUrl>https://github.com/iopietro/VoiceChatManager</PackageProjectUrl>
-  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-</PropertyGroup>
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <OutputType>Library</OutputType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <OutputPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup>  
+    <Authors>iopietro</Authors>
+    <Version>1.1.0-beta</Version>
+    <Copyright>Copyright © $(Authors) 2021</Copyright>
+    <RepositoryType>Git</RepositoryType>
+    <RepositoryUrl>https://github.com/iopietro/VoiceChatManager</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/iopietro/VoiceChatManager</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+</Project>

@@ -1,11 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk"> 
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <LangVersion>7.3</LangVersion>
-    <OutputType>Library</OutputType>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-  </PropertyGroup>
+  <Import Project="..\..\VoiceChatManager.props" />
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -18,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VoiceChatManager.Core\VoiceChatManager.Core.csproj" />
+    <ProjectReference Include="..\VoiceChatManager.Core\VoiceChatManager.Core.csproj" Private="false" />
   </ItemGroup>
 
   <ItemGroup>

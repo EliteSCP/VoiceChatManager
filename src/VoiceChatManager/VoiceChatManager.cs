@@ -37,7 +37,7 @@ namespace VoiceChatManager
         public static VoiceChatManager Instance => InstanceValue;
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion { get; } = new Version(2, 8, 0);
+        public override Version RequiredExiledVersion { get; } = new Version(2, 10, 0);
 
         /// <summary>
         /// Gets GDPR related configs.
