@@ -18,6 +18,11 @@ namespace VoiceChatManager.Commands
     internal class PauseCommand : ICommand
     {
         /// <summary>
+        /// The command permission.
+        /// </summary>
+        public const string Permission = "vcm.pause";
+
+        /// <summary>
         /// Gets the command instance.
         /// </summary>
         public static PauseCommand Instance { get; } = new PauseCommand();
@@ -29,30 +34,30 @@ namespace VoiceChatManager.Commands
         public string[] Aliases { get; } = { "pa" };
 
         /// <inheritdoc/>
-        public string Description { get; } = "Pause an audio file from playing.";
+        public string Description { get; } = VoiceChatManager.Instance.Translation.PauseCommandDescription;
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (arguments.Count < 1)
             {
-                response = "voicechatmanager pause [Preset name/File name/File path/Audio ID]";
+                response = VoiceChatManager.Instance.Translation.PauseCommandUsage;
                 return false;
             }
 
-            if (!sender.CheckPermission("vcm.pause"))
+            if (!sender.CheckPermission(Permission))
             {
-                response = "Not enough permissions to run this command!\nRequired: vcm.pause";
+                response = string.Format(VoiceChatManager.Instance.Translation.NotEnoughPermissionsError, Permission);
                 return false;
             }
 
             if (arguments.At(0).TryPause(out var streamedMicrophone) || (int.TryParse(arguments.At(0), out var id) && id.TryPause(out streamedMicrophone)))
             {
-                response = $"Audio \"{arguments.At(0)}\" has been paused at {streamedMicrophone.Progression.ToString(VoiceChatManager.Instance.Config.DurationFormat)} ({Math.Round(streamedMicrophone.Stream.Position / (float)streamedMicrophone.Stream.Length * 100f, 1)}%).";
+                response = string.Format(VoiceChatManager.Instance.Translation.AudioHasBeenPaused, arguments.At(0), streamedMicrophone.Progression.ToString(VoiceChatManager.Instance.Config.DurationFormat), Math.Round(streamedMicrophone.Stream.Position / (float)streamedMicrophone.Stream.Length * 100f, 1));
                 return true;
             }
 
-            response = $"Audio \"{arguments.At(0)}\" not found or it's not playing!";
+            response = string.Format(VoiceChatManager.Instance.Translation.AudioNotFoundOrIsNotPlaying, arguments.At(0));
             return false;
         }
     }

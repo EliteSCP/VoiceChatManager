@@ -44,7 +44,7 @@ namespace VoiceChatManager.Events
                     Instance.Converter);
 
                 if (!Instance.Capture?.Recorders.TryAdd(voiceChatRecorder.Talker, voiceChatRecorder) ?? true)
-                    Log.Debug($"Failed to add {ev.Player} ({ev.Player.UserId}) to the list of voice recorded players!", Instance.Config.IsDebugEnabled);
+                    Log.Debug(string.Format(Instance.Translation.FailedToAddPlayerError, ev.Player.Nickname, ev.Player.UserId), Instance.Config.IsDebugEnabled);
             }
         }
 
@@ -56,7 +56,7 @@ namespace VoiceChatManager.Events
 
             if (talker.PlayBackComponent == null || (!Instance.Capture?.Recorders.TryRemove(talker, out voiceChatRecorder) ?? true))
             {
-                Log.Debug($"Failed to remove {ev.Player} ({ev.Player.UserId}) from the list of voice recorded players!", Instance.Config.IsDebugEnabled);
+                Log.Debug(string.Format(Instance.Translation.FailedToRemovePlayerError, ev.Player.Nickname, ev.Player.UserId), Instance.Config.IsDebugEnabled);
                 return;
             }
 

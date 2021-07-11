@@ -24,6 +24,11 @@ namespace VoiceChatManager.Commands
     internal class PlayCommand : ICommand
     {
         /// <summary>
+        /// Gets the command permission.
+        /// </summary>
+        public const string Permission = "vcm.play";
+
+        /// <summary>
         /// The extension of converted files through this command.
         /// </summary>
         public const string ConvertedFileExtension = ".f32le";
@@ -44,29 +49,26 @@ namespace VoiceChatManager.Commands
         public string[] Aliases { get; } = { "p", "pl" };
 
         /// <inheritdoc/>
-        public string Description { get; } = "Plays an audio file on a specific channel.";
+        public string Description { get; } = VoiceChatManager.Instance.Translation.PlayCommandDescription;
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (arguments.Count < 2 || arguments.Count > 6 || arguments.Count == 5)
             {
-                response = "\nvoicechatmanager play [File alias/File path] [Volume (0-100)]" +
-                    "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] [Channel name (SCP, Intercom, Proximity, Ghost)]" +
-                    "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [Player ID/Player Name/Player]" +
-                    "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [X] [Y] [Z]";
+                response = VoiceChatManager.Instance.Translation.PlayCommandUsage;
                 return false;
             }
 
-            if (!sender.CheckPermission("vcm.play"))
+            if (!sender.CheckPermission(Permission))
             {
-                response = "Not enough permissions to run this command!\nRequired: vcm.play";
+                response = string.Format(VoiceChatManager.Instance.Translation.NotEnoughPermissionsError, Permission);
                 return false;
             }
 
             if (!float.TryParse(arguments.At(1), out var volume))
             {
-                response = $"{arguments.At(1)} is not a valid volume, range varies from 0 to 100!";
+                response = string.Format(VoiceChatManager.Instance.Translation.InvalidVolumeError, arguments.At(1));
                 return false;
             }
 
@@ -81,11 +83,11 @@ namespace VoiceChatManager.Commands
             {
                 if (!VoiceChatManager.Instance.Config.IsFFmpegInstalled)
                 {
-                    response = $"Your FFmpeg directory isn't set up properly, \"{path}\" won't be converted and played.";
+                    response = string.Format(VoiceChatManager.Instance.Translation.FFmpegDirectoryIsNotSetUpProperlyError, path);
                     return false;
                 }
 
-                response = $"Converting \"{path}\"...";
+                response = string.Format(VoiceChatManager.Instance.Translation.ConvertingAudio, path);
 
                 path.ConvertFileAsync().ContinueWith(
                     task =>
@@ -103,7 +105,7 @@ namespace VoiceChatManager.Commands
                     }
                     else
                     {
-                        Log.Error($"Failed to convert \"{path}\": {task.Exception}");
+                        Log.Error(string.Format(VoiceChatManager.Instance.Translation.FailedToConvert, path, task.Exception));
                     }
                 }, TaskContinuationOptions.ExecuteSynchronously);
 
@@ -112,7 +114,9 @@ namespace VoiceChatManager.Commands
 
             if (int.TryParse(path, out var id) && id.TryPlay(volume, channelName, out var streamedMicrophone))
             {
-                response = $"Playing \"{id}\" with {volume} volume on \"{streamedMicrophone.ChannelName}\" channel, duration: {streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat)}";
+                response = string.Format(
+                    VoiceChatManager.Instance.Translation.AudioIsPlayingInAChannel, id, volume, streamedMicrophone.ChannelName, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
+
                 return true;
             }
 
@@ -123,7 +127,9 @@ namespace VoiceChatManager.Commands
             {
                 if (path.TryPlay(volume, channelName, out streamedMicrophone))
                 {
-                    response = $"Playing \"{path}\" with {volume} volume on \"{streamedMicrophone.ChannelName}\" channel, duration: {streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat)}";
+                    response = string.Format(
+                        VoiceChatManager.Instance.Translation.AudioIsPlayingInAChannel, id, volume, streamedMicrophone.ChannelName, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
+
                     return true;
                 }
             }
@@ -131,12 +137,13 @@ namespace VoiceChatManager.Commands
             {
                 if (!(Player.Get(arguments.At(3)) is Player player))
                 {
-                    response = $"Player \"{arguments.At(3)}\" not found!";
+                    response = string.Format(VoiceChatManager.Instance.Translation.PlayerNotFoundError, arguments.At(3));
                     return false;
                 }
                 else if (path.TryPlay(Talker.GetOrCreate(player.GameObject), volume, channelName, out streamedMicrophone))
                 {
-                    response = $"Playing \"{path}\" with {volume} volume, in the proximity of \"{player.Nickname}\", duration: {streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat)}";
+                    response = string.Format(
+                        VoiceChatManager.Instance.Translation.AudioIsPlayingNearAPlayer, path, volume, player.Nickname, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
                     return true;
                 }
             }
@@ -144,27 +151,28 @@ namespace VoiceChatManager.Commands
             {
                 if (!float.TryParse(arguments.At(3), out var x))
                 {
-                    response = $"\"{arguments.At(3)}\" is not a valid x coordinate!";
+                    response = string.Format(VoiceChatManager.Instance.Translation.InvalidCoordinateError, arguments.At(3), "x");
                     return false;
                 }
                 else if (!float.TryParse(arguments.At(4), out var y))
                 {
-                    response = $"\"{arguments.At(4)}\" is not a valid x coordinate!";
+                    response = string.Format(VoiceChatManager.Instance.Translation.InvalidCoordinateError, arguments.At(4), "y");
                     return false;
                 }
                 else if (!float.TryParse(arguments.At(5), out var z))
                 {
-                    response = $"\"{arguments.At(5)}\" is not a valid z coordinate!";
+                    response = string.Format(VoiceChatManager.Instance.Translation.InvalidCoordinateError, arguments.At(5), "z");
                     return false;
                 }
                 else if (path.TryPlay(new Vector3(x, y, z), volume, channelName, out streamedMicrophone))
                 {
-                    response = $"Playing \"{path}\" with {volume} volume, in the proximity of \"({x}, {y}, {z})\", duration: {streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat)}";
+                    response = string.Format(
+                        VoiceChatManager.Instance.Translation.AudioIsPlayingInAPosition, path, volume, x, y, z, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
                     return true;
                 }
             }
 
-            response = $"Audio \"{path}\" not found or it's already playing!";
+            response = string.Format(VoiceChatManager.Instance.Translation.AudioNotFoundOrAlreadyPlaying, path);
             return false;
         }
     }

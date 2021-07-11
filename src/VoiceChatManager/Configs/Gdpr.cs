@@ -40,11 +40,11 @@ namespace VoiceChatManager.Configs
         {
             try
             {
-                File.WriteAllText(Instance.Config.GdprConfigFullPath, ConfigManager.Serializer.Serialize(this));
+                File.WriteAllText(Instance.Config.GdprConfigFullPath, Loader.Serializer.Serialize(this));
             }
             catch (Exception exception)
             {
-                Log.Error($"An error has occurred while saving GDPR configs to {Instance.Config.GdprConfigFullPath} path:\n{exception}");
+                Log.Error(string.Format(Instance.Translation.SavingGdprConfigsError, Instance.Config.GdprConfigFullPath, exception));
             }
         }
 
@@ -66,11 +66,11 @@ namespace VoiceChatManager.Configs
                     return;
                 }
 
-                this.CopyProperties(ConfigManager.Deserializer.Deserialize<Gdpr>(File.ReadAllText(Instance.Config.GdprConfigFullPath)));
+                this.CopyProperties(Loader.Deserializer.Deserialize<Gdpr>(File.ReadAllText(Instance.Config.GdprConfigFullPath)));
             }
             catch (Exception exception)
             {
-                Log.Error($"An error has occurred while loading GDPR configs from {Instance.Config.GdprConfigFullPath} path:\n{exception}");
+                Log.Error(string.Format(Instance.Translation.LoadingGdprConfigsError, Instance.Config.GdprConfigFullPath, exception));
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ListCommand.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -42,7 +42,7 @@ namespace VoiceChatManager.Commands.List
         /// <inheritdoc/>
         protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            response = "Invalid subcommand! Available: presets, audios, clear";
+            response = string.Format(VoiceChatManager.Instance.Translation.InvalidSubCommandError, "presets, audios, clear");
             return true;
         }
     }

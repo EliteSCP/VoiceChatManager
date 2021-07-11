@@ -22,7 +22,7 @@ namespace VoiceChatManager
     /// <summary>
     /// Plays audio files in game.
     /// </summary>
-    public class VoiceChatManager : Plugin<Config>
+    public class VoiceChatManager : Plugin<Config, Translation>
     {
         private static readonly VoiceChatManager InstanceValue = new VoiceChatManager();
         private static Harmony harmonyInstance;

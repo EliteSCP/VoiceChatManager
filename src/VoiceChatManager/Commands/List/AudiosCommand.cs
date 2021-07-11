@@ -18,6 +18,11 @@ namespace VoiceChatManager.Commands.List
     /// <inheritdoc/>
     internal class AudiosCommand : ICommand
     {
+        /// <summary>
+        /// The command permission.
+        /// </summary>
+        public const string Permission = "vcm.list.audio";
+
         private AudiosCommand()
         {
         }
@@ -34,18 +39,20 @@ namespace VoiceChatManager.Commands.List
         public string[] Aliases { get; } = { "audio", "a", "au" };
 
         /// <inheritdoc/>
-        public string Description { get; } = "Gets the list of playing/paused/stopped audios.";
+        public string Description { get; } = VoiceChatManager.Instance.Translation.AudiosCommandDescription;
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            if (!sender.CheckPermission("vcm.list.audio"))
+            if (!sender.CheckPermission(Permission))
             {
-                response = "Not enough permissions to run this command!\nRequired: vcm.list.audio";
+                response = string.Format(VoiceChatManager.Instance.Translation.NotEnoughPermissionsError, Permission);
                 return false;
             }
 
-            var message = StringBuilderPool.Shared.Rent().AppendLine().Append("[Audios list (").Append(StreamedMicrophone.List.Count).AppendLine(")]").AppendLine();
+            var message = StringBuilderPool.Shared.Rent().AppendLine()
+                .Append("[").Append(VoiceChatManager.Instance.Translation.AudiosList).Append(" (").Append(StreamedMicrophone.List.Count).AppendLine(")]")
+                .AppendLine();
 
             if (StreamedMicrophone.List.Count > 0)
             {
@@ -59,25 +66,25 @@ namespace VoiceChatManager.Commands.List
                         message.Append(fileStream.Name);
 
                     message.AppendLine("]")
-                        .Append("Status: ").AppendLine(streamedMicrophone.Status.ToString())
-                        .Append("Channel name: ").AppendLine(streamedMicrophone.ChannelName.ToString())
-                        .Append("Volume: ").Append(streamedMicrophone.Volume).Append('/').Append(VoiceChatManager.Instance.Config.VolumeLimit.ToString()).Append(" (").Append(Math.Round(streamedMicrophone.Volume / VoiceChatManager.Instance.Config.VolumeLimit * 100)).AppendLine("%)")
-                        .Append("Duration: ").AppendLine(streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat))
-                        .Append("Progression: ").Append(streamedMicrophone.Progression.ToString(VoiceChatManager.Instance.Config.DurationFormat)).Append(" (").Append(Math.Round(streamedMicrophone.Stream.Position / (float)streamedMicrophone.Stream.Length * 100f, 1)).AppendLine("%)")
-                        .Append("Size: ").Append(streamedMicrophone.Size.FromBytesToMegaBytes()).AppendLine(" MB");
+                        .Append(VoiceChatManager.Instance.Translation.Status).Append(": ").AppendLine(streamedMicrophone.Status.ToString())
+                        .Append(VoiceChatManager.Instance.Translation.ChannelName).Append(": ").AppendLine(streamedMicrophone.ChannelName.ToString())
+                        .Append(VoiceChatManager.Instance.Translation.Volume).Append(": ").Append(streamedMicrophone.Volume).Append('/').Append(VoiceChatManager.Instance.Config.VolumeLimit.ToString()).Append(" (").Append(Math.Round(streamedMicrophone.Volume / VoiceChatManager.Instance.Config.VolumeLimit * 100)).AppendLine("%)")
+                        .Append(VoiceChatManager.Instance.Translation.Duration).Append(": ").AppendLine(streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat))
+                        .Append(VoiceChatManager.Instance.Translation.Progression).Append(": ").Append(streamedMicrophone.Progression.ToString(VoiceChatManager.Instance.Config.DurationFormat)).Append(" (").Append(Math.Round(streamedMicrophone.Stream.Position / (float)streamedMicrophone.Stream.Length * 100f, 1)).AppendLine("%)")
+                        .Append(VoiceChatManager.Instance.Translation.Size).Append(": ").Append(streamedMicrophone.Size.FromBytesToMegaBytes()).Append(' ').AppendLine(VoiceChatManager.Instance.Translation.MB);
 
                     if (streamedMicrophone is IProximityStreamedMicrophone proximityStreamedMicrophone)
-                        message.Append("Position: ").AppendLine(proximityStreamedMicrophone.Position.ToString());
+                        message.Append(VoiceChatManager.Instance.Translation.Position).Append(": ").AppendLine(proximityStreamedMicrophone.Position.ToString());
 
                     if (streamedMicrophone is IPlayerProximityStreamedMicrophone playerProximityStreamedMicrophone)
-                        message.Append("Player: ").AppendLine(playerProximityStreamedMicrophone.Talker.ToString());
+                        message.Append(VoiceChatManager.Instance.Translation.Player).Append(": ").AppendLine(playerProximityStreamedMicrophone.Talker.ToString());
 
                     message.AppendLine();
                 }
             }
             else
             {
-                message.Append("There are no audios.");
+                message.Append(VoiceChatManager.Instance.Translation.ThereAreNoAudios);
             }
 
             response = StringBuilderPool.Shared.ToStringReturn(message);

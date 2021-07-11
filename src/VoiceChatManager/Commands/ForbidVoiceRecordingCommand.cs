@@ -23,26 +23,26 @@ namespace VoiceChatManager.Commands
         public string[] Aliases { get; } = Array.Empty<string>();
 
         /// <inheritdoc/>
-        public string Description { get; } = "Type this command to forbid to be voice recorded for security reasons.";
+        public string Description { get; } = VoiceChatManager.Instance.Translation.ForbidVoiceRecordingCommandDescription;
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (!VoiceChatManager.Instance.Gdpr.IsCompliant || !VoiceChatManager.Instance.Config.Recorder.IsEnabled)
             {
-                response = "Command is currently disabled.";
+                response = VoiceChatManager.Instance.Translation.CommandIsCurrentlyDisabled;
                 return false;
             }
 
             if (!(Player.Get(sender as CommandSender) is Player player))
             {
-                response = "An error has occurred while executing the command!";
+                response = VoiceChatManager.Instance.Translation.ExecutingCommandError;
                 return false;
             }
 
             if (!player.SessionVariables.TryGetValue("canBeVoiceRecorded", out object canBeVoiceRecorded) || !(bool)canBeVoiceRecorded)
             {
-                response = "YOU'RE NOT BEING VOICE RECORDED YET!\nTYPE .acceptvoicerecording TO ACCEPT TO BE VOICE RECORDED FOR SECURITY REASONS.";
+                response = VoiceChatManager.Instance.Translation.ForbidVoiceRecordingCommandWarning;
                 return false;
             }
 
@@ -53,7 +53,7 @@ namespace VoiceChatManager.Commands
 
             if (talker.PlayBackComponent == null || (!VoiceChatManager.Instance.Capture?.Recorders.TryRemove(talker, out voiceChatRecorder) ?? true))
             {
-                response = "An error has occurred! You cannot be removed from the list of voice recorded players!";
+                response = VoiceChatManager.Instance.Translation.YouCannotBeRemovedError;
                 return true;
             }
 
@@ -62,7 +62,7 @@ namespace VoiceChatManager.Commands
             VoiceChatManager.Instance.Gdpr.CanBeVoiceRecordedPlayerUserIds?.Remove(player.UserId);
             VoiceChatManager.Instance.Gdpr.Save();
 
-            response = "FROM NOW ON, YOU WON'T BE VOICE RECORDED ANYMORE.";
+            response = VoiceChatManager.Instance.Translation.YouWontBeVoiceRecordedWarning;
             return true;
         }
     }

@@ -49,7 +49,7 @@ namespace VoiceChatManager.Events
             }
             else if (Instance.Config.Converter.IsEnabled)
             {
-                Log.Warn($"Audio converter cannot be enabled, FFmpeg wasn't found at \"{Instance.Config.FFmpegDirectoryPath}\"");
+                Log.Warn(string.Format(Instance.Translation.AudioConverterCannotBeEnabledError, Instance.Config.FFmpegDirectoryPath));
 
                 Instance.Config.Converter.IsEnabled = false;
             }
@@ -123,7 +123,7 @@ namespace VoiceChatManager.Events
 
                         if (talker.PlayBackComponent == null && (!Instance.Capture?.Recorders.TryAdd(talker, voiceChatRecorder) ?? true))
                         {
-                            Log.Debug($"Failed to add {player} ({player.UserId}) to the list of voice recorded players!", Instance.Config.IsDebugEnabled);
+                            Log.Debug(string.Format(Instance.Translation.FailedToAddPlayerError, player.Nickname, player.UserId), Instance.Config.IsDebugEnabled);
                             continue;
                         }
 
@@ -136,7 +136,7 @@ namespace VoiceChatManager.Events
 
                         if (talker.PlayBackComponent == null || (!Instance.Capture?.Recorders.TryRemove(talker, out voiceChatRecorder) ?? true))
                         {
-                            Log.Debug($"Failed to remove {player} ({player.UserId}) from the list of voice recorded players!", Instance.Config.IsDebugEnabled);
+                            Log.Debug(string.Format(Instance.Translation.FailedToRemovePlayerError, player.Nickname, player.UserId), Instance.Config.IsDebugEnabled);
                             continue;
                         }
 
@@ -168,7 +168,7 @@ namespace VoiceChatManager.Events
             if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
                 OnReloadedConfigs();
 
-            RoundName = $"Round {DateTime.Now.ToString(Instance.Config.Recorder.DateTimeFormat)}";
+            RoundName = string.Format(Instance.Translation.RoundName, DateTime.Now.ToString(Instance.Config.Recorder.DateTimeFormat));
 
             if (Instance.Config.Recorder.IsEnabled && Instance.Config.Recorder.KeepLastNumberOfRounds > 0)
             {

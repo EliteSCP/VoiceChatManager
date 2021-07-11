@@ -15,6 +15,11 @@ namespace VoiceChatManager.Commands.List
     /// <inheritdoc/>
     internal class ClearCommand : ICommand
     {
+        /// <summary>
+        /// The command permission.
+        /// </summary>
+        public const string Permission = "vcm.list.clear";
+
         private ClearCommand()
         {
         }
@@ -31,14 +36,14 @@ namespace VoiceChatManager.Commands.List
         public string[] Aliases { get; } = { "cl", "c" };
 
         /// <inheritdoc/>
-        public string Description { get; } = "Clears the audios list.";
+        public string Description { get; } = VoiceChatManager.Instance.Translation.ClearCommandDescription;
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            if (!sender.CheckPermission("vcm.list.clear"))
+            if (!sender.CheckPermission(Permission))
             {
-                response = "Not enough permissions to run this command!\nRequired: vcm.list.clear";
+                response = string.Format(VoiceChatManager.Instance.Translation.NotEnoughPermissionsError, Permission);
                 return false;
             }
 
@@ -47,7 +52,7 @@ namespace VoiceChatManager.Commands.List
 
             StreamedMicrophone.List.Clear();
 
-            response = "Audios list cleared successfully!";
+            response = VoiceChatManager.Instance.Translation.AudiosListClearedSuccess;
             return true;
         }
     }

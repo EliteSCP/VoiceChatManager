@@ -18,6 +18,11 @@ namespace VoiceChatManager.Commands
     internal class StopCommand : ICommand
     {
         /// <summary>
+        /// The command permission.
+        /// </summary>
+        public const string Permission = "vcm.stop";
+
+        /// <summary>
         /// Gets the command instance.
         /// </summary>
         public static StopCommand Instance { get; } = new StopCommand();
@@ -29,30 +34,30 @@ namespace VoiceChatManager.Commands
         public string[] Aliases { get; } = { "s", "st" };
 
         /// <inheritdoc/>
-        public string Description { get; } = "Stops an audio file from playing.";
+        public string Description { get; } = VoiceChatManager.Instance.Translation.StopCommandDescription;
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (arguments.Count < 1)
             {
-                response = "voicechatmanager stop [Preset name/File name/File path/Audio ID]";
+                response = VoiceChatManager.Instance.Translation.StopCommandUsage;
                 return false;
             }
 
-            if (!sender.CheckPermission("vcm.stop"))
+            if (!sender.CheckPermission(Permission))
             {
-                response = "Not enough permissions to run this command!\nRequired: vcm.stop";
+                response = string.Format(VoiceChatManager.Instance.Translation.NotEnoughPermissionsError, Permission);
                 return false;
             }
 
             if (arguments.At(0).TryStop(out var _) || (int.TryParse(arguments.At(0), out var id) && id.TryStop(out _)))
             {
-                response = $"Audio \"{arguments.At(0)}\" has been stopped.";
+                response = string.Format(VoiceChatManager.Instance.Translation.AudioHasBeenStopped, arguments.At(0));
                 return true;
             }
 
-            response = $"Audio \"{arguments.At(0)}\" not found or already stopped!";
+            response = string.Format(VoiceChatManager.Instance.Translation.AudioNotFoundOrAlreadyStopped, arguments.At(0));
             return false;
         }
     }

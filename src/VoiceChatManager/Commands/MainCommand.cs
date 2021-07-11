@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="MainCommand.cs" company="iopietro">
 // Copyright (c) iopietro. All rights reserved.
 // Licensed under the MIT license.
@@ -44,7 +44,7 @@ namespace VoiceChatManager.Commands
         /// <inheritdoc/>
         protected override bool ExecuteParent(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            response = "Invalid subcommand! Available: play, pause, stop, list";
+            response = string.Format(VoiceChatManager.Instance.Translation.InvalidSubCommandError, "play, pause, stop, list");
             return false;
         }
     }

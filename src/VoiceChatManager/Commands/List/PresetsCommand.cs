@@ -15,6 +15,11 @@ namespace VoiceChatManager.Commands.List
     /// <inheritdoc/>
     internal class PresetsCommand : ICommand
     {
+        /// <summary>
+        /// The command permission.
+        /// </summary>
+        public const string Permission = "vcm.list.presets";
+
         private PresetsCommand()
         {
         }
@@ -31,18 +36,20 @@ namespace VoiceChatManager.Commands.List
         public string[] Aliases { get; } = { "p", "pr", "pre" };
 
         /// <inheritdoc/>
-        public string Description { get; } = "Gets the list of audio presets.";
+        public string Description { get; } = VoiceChatManager.Instance.Translation.PresetCommandDescription;
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            if (!sender.CheckPermission("vcm.list.presets"))
+            if (!sender.CheckPermission(Permission))
             {
-                response = "Not enough permissions to run this command!\nRequired: vcm.list.presets";
+                response = string.Format(VoiceChatManager.Instance.Translation.NotEnoughPermissionsError, Permission);
                 return false;
             }
 
-            var message = StringBuilderPool.Shared.Rent().AppendLine().Append("[Audio presets (").Append(VoiceChatManager.Instance.Config.Presets.Count).AppendLine(")]").AppendLine();
+            var message = StringBuilderPool.Shared.Rent().AppendLine()
+                .Append("[").Append(VoiceChatManager.Instance.Translation.AudioPresets).Append(" (").Append(VoiceChatManager.Instance.Config.Presets.Count).AppendLine(")]")
+                .AppendLine();
 
             if (VoiceChatManager.Instance.Config.Presets.Count > 0)
             {
@@ -51,12 +58,12 @@ namespace VoiceChatManager.Commands.List
                 foreach (var preset in VoiceChatManager.Instance.Config.Presets)
                 {
                     message.Append("[").Append(i++).Append(". ").Append(preset.Key).AppendLine("]").
-                        Append("Path: ").AppendLine(preset.Value).AppendLine();
+                        Append(VoiceChatManager.Instance.Translation.Path).Append(": ").AppendLine(preset.Value).AppendLine();
                 }
             }
             else
             {
-                message.Append("There are no audio presets.");
+                message.Append(VoiceChatManager.Instance.Translation.ThereAreNoAudioPresets);
             }
 
             response = StringBuilderPool.Shared.ToStringReturn(message);
