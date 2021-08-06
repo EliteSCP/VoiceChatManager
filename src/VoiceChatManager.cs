@@ -91,6 +91,16 @@ namespace VoiceChatManager
             Exiled.Events.Handlers.Server.WaitingForPlayers += ServerHandler.OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RestartingRound += ServerHandler.OnRestartingRound;
 
+            // Play on event events, OnWaitingForPlayers is invoked before this
+            Exiled.Events.Handlers.Server.RoundStarted += ServerHandler.OnRoundStarted;
+            Exiled.Events.Handlers.Map.AnnouncingNtfEntrance += ServerHandler.OnAnnouncingNtfEntrance;
+            Exiled.Events.Handlers.Server.RespawningTeam += ServerHandler.OnRespawningTeam;
+            Exiled.Events.Handlers.Warhead.Starting += ServerHandler.OnWarheadStarting;
+            Exiled.Events.Handlers.Warhead.Stopping += ServerHandler.OnWarheadStopping;
+            Exiled.Events.Handlers.Warhead.Detonated += ServerHandler.OnWarheadDetonated;
+            Exiled.Events.Handlers.Map.Decontaminating += ServerHandler.OnDecontaminating;
+            Exiled.Events.Handlers.Server.RoundEnded += ServerHandler.OnRoundEnded;
+
             harmonyInstance = new Harmony($"com.iopietro.voicechatmanager");
             harmonyInstance.PatchAll();
 
@@ -122,6 +132,16 @@ namespace VoiceChatManager
             Exiled.Events.Handlers.Server.ReloadedConfigs -= ServerHandler.OnReloadedConfigs;
             Exiled.Events.Handlers.Server.WaitingForPlayers -= ServerHandler.OnWaitingForPlayers;
             Exiled.Events.Handlers.Server.RestartingRound -= ServerHandler.OnRestartingRound;
+
+            // Play on event events, OnWaitingForPlayers is invoked before this
+            Exiled.Events.Handlers.Server.RoundStarted -= ServerHandler.OnRoundStarted;
+            Exiled.Events.Handlers.Map.AnnouncingNtfEntrance -= ServerHandler.OnAnnouncingNtfEntrance;
+            Exiled.Events.Handlers.Server.RespawningTeam -= ServerHandler.OnRespawningTeam;
+            Exiled.Events.Handlers.Warhead.Starting -= ServerHandler.OnWarheadStarting;
+            Exiled.Events.Handlers.Warhead.Stopping -= ServerHandler.OnWarheadStopping;
+            Exiled.Events.Handlers.Warhead.Detonated -= ServerHandler.OnWarheadDetonated;
+            Exiled.Events.Handlers.Map.Decontaminating -= ServerHandler.OnDecontaminating;
+            Exiled.Events.Handlers.Server.RoundEnded -= ServerHandler.OnRoundEnded;
 
             harmonyInstance.UnpatchAll();
             harmonyInstance = null;
