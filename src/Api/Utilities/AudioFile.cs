@@ -44,7 +44,7 @@ namespace VoiceChatManager.Api.Utilities
         /// </summary>
         public void Play()
         {
-            if (string.IsNullOrEmpty(Name) || !VoiceChatManager.Instance.Config.Presets.ContainsKey(Name) || !File.Exists(Name))
+            if (string.IsNullOrEmpty(Name) && (!VoiceChatManager.Instance.Config.Presets.ContainsKey(Name) || !File.Exists(Name)))
                 return;
 
             string channelType = ChannelType.GetChannelName();
