@@ -2,17 +2,25 @@
 An SCP: SL plugin which allows to record players' voice chat and play custom audios globally or in the proximity of a specific position or player.
 
 ## Minimum requirements
-[EXILED](https://github.com/Exiled-Team/EXILED/tags) **2.8.0+**
+[EXILED](https://github.com/Exiled-Team/EXILED/tags) **3.0.4+**
 
 [FFmpeg](https://www.ffmpeg.org/download.html) (Optional, only if you want to directly convert audios from the plugin)
 
-### Player commands
+## How to install
+
+1. Extract **VoiceChatManager.tar.gz**.
+
+2. Put **VoiceChatManager.Core.dll** inside `%appdata%\Plugins\dependencies` if you're on **Windows** or `~/.config/Plugins/dependencies` on **Linux**.
+
+3. Put **VoiceChatManager.dll** inside `%appdata%\Plugins` if you're on **Windows** or `~/.config/Plugins` on **Linux**.
+
+## Player commands
 | Command | Description |
 | --- | --- |
 | .forbidvoicerecording | Type this command to forbid to be voice recorded for security reasons. |
 | .acceptvoicerecording | Type this command to accept to be voice recorded for security reasons. |
 
-### Remote Admin/Server console commands
+## Remote Admin/Server console commands
 | Command | Description | Arguments | Permission | Example |
 | --- | --- | --- | --- | --- |
 | vcm stop | Stops an audio file from playing. | **[Preset name/File name/File path/Audio ID]** | **voicechatmanager.stop** | **vcm stop 0** |
