@@ -1,9 +1,16 @@
-namespace VoiceChatManager.Api.Utilities
+// -----------------------------------------------------------------------
+// <copyright file="AudioFile.cs" company="iopietro">
+// Copyright (c) iopietro. All rights reserved.
+// Licensed under the MIT license.
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace VoiceChatManager.Configs
 {
     using System;
     using System.IO;
-    using Api.Extensions;
     using Commands;
+    using Core.Extensions;
     using Exiled.API.Features;
     using UnityEngine;
 
@@ -30,7 +37,7 @@ namespace VoiceChatManager.Api.Utilities
         public float Volume { get; private set; } = 100;
 
         /// <summary>
-        /// Gets the ChannelType on which the audio will be played
+        /// Gets the ChannelType on which the audio will be played.
         /// </summary>
         public string ChannelType { get; private set; } = "Intercom";
 

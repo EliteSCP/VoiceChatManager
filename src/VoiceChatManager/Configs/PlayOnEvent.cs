@@ -1,7 +1,13 @@
+// -----------------------------------------------------------------------
+// <copyright file="PlayOnEvent.cs" company="iopietro">
+// Copyright (c) iopietro. All rights reserved.
+// Licensed under the MIT license.
+// </copyright>
+// -----------------------------------------------------------------------
+
 namespace VoiceChatManager.Configs
 {
     using System.ComponentModel;
-    using Api.Utilities;
 
     /// <summary>
     /// <see cref="PlayOnEvent"/> related configs.
