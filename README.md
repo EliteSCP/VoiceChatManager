@@ -2,7 +2,7 @@
 An SCP: SL plugin which allows to record players' voice chat and play custom audios globally or in the proximity of a specific position or player.
 
 ## Minimum requirements
-[EXILED](https://github.com/Exiled-Team/EXILED/tags) **3.0.4+**
+[EXILED](https://github.com/Exiled-Team/EXILED/releases/tag/3.0.4) **3.0.4+**
 
 [FFmpeg](https://www.ffmpeg.org/download.html) (Optional, only if you want to directly convert audios from the plugin)
 
