@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <PropertyGroup>  
-    <Authors>iopietro</Authors>
-    <Version>1.1.0-beta</Version>
+    <Authors>iopietro & Michal78900</Authors>
+    <Version>1.1.1-beta</Version>
     <Copyright>Copyright © $(Authors) 2021</Copyright>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/iopietro/VoiceChatManager</RepositoryUrl>
