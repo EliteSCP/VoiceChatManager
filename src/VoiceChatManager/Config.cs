@@ -51,6 +51,12 @@ namespace VoiceChatManager
         };
 
         /// <summary>
+        /// Gets <see cref="Configs.PlayOnEvent"/> related configs.
+        /// </summary>
+        [Description("Playing audio on a certain event related configs")]
+        public PlayOnEvent PlayOnEvent { get; private set; } = new PlayOnEvent();
+
+        /// <summary>
         /// Gets the directory in which ffmpeg.exe (Windows) or ffmpeg (linux) is located.
         /// </summary>
         [Description("The directory in which ffmpeg.exe (Windows) or ffmpeg (linux) is located, leave it empty or null if you don't want to use it")]
