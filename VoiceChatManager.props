@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>  
-    <Authors>iopietro & Michal78900</Authors>
+    <Authors>iopietro and Michal78900</Authors>
     <Version>1.1.1-beta</Version>
     <Copyright>Copyright © $(Authors) 2021</Copyright>
     <RepositoryType>Git</RepositoryType>
