@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk"> 
   <PropertyGroup>
     <AssemblyName>VoiceChatManager.Core</AssemblyName>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   
   <Import Project="..\..\VoiceChatManager.props" />
