@@ -128,7 +128,7 @@ namespace VoiceChatManager.Commands
                 if (path.TryPlay(volume, channelName, out streamedMicrophone))
                 {
                     response = string.Format(
-                        VoiceChatManager.Instance.Translation.AudioIsPlayingInAChannel, id, volume, streamedMicrophone.ChannelName, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
+                        VoiceChatManager.Instance.Translation.AudioIsPlayingInAChannel, path, volume, streamedMicrophone.ChannelName, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
 
                     return true;
                 }
