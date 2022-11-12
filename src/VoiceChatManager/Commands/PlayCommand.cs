@@ -107,7 +107,8 @@ namespace VoiceChatManager.Commands
                     {
                         Log.Error(string.Format(VoiceChatManager.Instance.Translation.FailedToConvert, path, task.Exception));
                     }
-                }, TaskContinuationOptions.ExecuteSynchronously);
+                },
+                    TaskContinuationOptions.ExecuteSynchronously);
 
                 return true;
             }

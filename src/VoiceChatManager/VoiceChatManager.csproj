@@ -11,30 +11,29 @@
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp-firstpass" HintPath="$(VCM_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="false" />
-    <Reference Include="Assembly-CSharp-Publicized" HintPath="$(VCM_REFERENCES)\Assembly-CSharp-Publicized.dll" Private="false" />
-    <Reference Include="CommandSystem.Core" HintPath="$(VCM_REFERENCES)\CommandSystem.Core.dll" Private="false" />
     <Reference Include="DissonanceVoip" HintPath="$(VCM_REFERENCES)\DissonanceVoip-Publicized.dll" Private="false" />
     <Reference Include="Mirror" HintPath="$(VCM_REFERENCES)\Mirror-Publicized.dll" Private="false" />
-    <Reference Include="NorthwoodLib" HintPath="$(VCM_REFERENCES)\NorthwoodLib.dll" Private="false" />
     <Reference Include="UnityEngine.AudioModule" HintPath="$(VCM_REFERENCES)\UnityEngine.AudioModule.dll" Private="false" />
     <Reference Include="UnityEngine.CoreModule" HintPath="$(VCM_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
     <Reference Include="UnityEngine.PhysicsModule" HintPath="$(VCM_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EXILED" Version="3.0.4" />
-    <PackageReference Include="Lib.Harmony" Version="2.0.4" />
+    <PackageReference Include="EXILED" Version="5.3.1" />
+    <PackageReference Include="Lib.Harmony" Version="2.2.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.ComponentModel.Composition" Version="5.0.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="Costura.Fody" Version="5.3.0" PrivateAssets="All" />
-    <PackageReference Include="Fody" Version="6.5.1" />
+    <PackageReference Include="Costura.Fody" Version="5.8.0-alpha0098" PrivateAssets="All" />
+    <PackageReference Include="Fody" Version="6.6.4" PrivateAssets="All">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.Platforms" Version="1.1.0" />
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.7.0" />
     <PackageReference Include="NETStandard.Library" Version="1.6.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435" PrivateAssets="All" />
     <PackageReference Include="System.AppContext" Version="4.3.0" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
