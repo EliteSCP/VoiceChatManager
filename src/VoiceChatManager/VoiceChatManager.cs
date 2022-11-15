@@ -43,7 +43,7 @@ namespace VoiceChatManager
         public override string Name { get; } = "VoiceChatManager";
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion { get; } = new Version(5, 3, 1);
+        public override Version RequiredExiledVersion { get; } = new Version(5, 3, 0);
 
         /// <summary>
         /// Gets GDPR related configs.
