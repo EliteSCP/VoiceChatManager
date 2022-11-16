@@ -11,6 +11,7 @@ namespace VoiceChatManager.Core.Audio.Capture
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
+    using Extensions;
     using NAudio.Wave;
 
     /// <inheritdoc/>
@@ -56,7 +57,20 @@ namespace VoiceChatManager.Core.Audio.Capture
         /// <param name="rootDirectoryPath"><inheritdoc cref="RootDirectoryPath"/></param>
         /// <param name="dateTimeFormat"><inheritdoc cref="DateTimeFormat"/></param>
         public VoiceChatRecorder(ITalker talker, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat)
-            : this(talker, waveFormat, rootDirectoryPath, dateTimeFormat, 1920)
+            : this(talker, waveFormat, rootDirectoryPath, dateTimeFormat, TimeZoneInfo.Local.Id)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VoiceChatRecorder"/> class.
+        /// </summary>
+        /// <param name="talker"><inheritdoc cref="Talker"/></param>
+        /// <param name="waveFormat"><inheritdoc cref="WaveFormat"/></param>
+        /// <param name="rootDirectoryPath"><inheritdoc cref="RootDirectoryPath"/></param>
+        /// <param name="dateTimeFormat"><inheritdoc cref="DateTimeFormat"/></param>
+        /// <param name="timeZone"><inheritdoc cref="TimeZone"/></param>
+        public VoiceChatRecorder(ITalker talker, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat, string timeZone)
+            : this(talker, waveFormat, rootDirectoryPath, dateTimeFormat, timeZone, 1920)
         {
         }
 
@@ -67,9 +81,10 @@ namespace VoiceChatManager.Core.Audio.Capture
         /// <param name="talker"><inheritdoc cref="Talker"/></param>
         /// <param name="rootDirectoryPath"><inheritdoc cref="RootDirectoryPath"/></param>
         /// <param name="dateTimeFormat"><inheritdoc cref="DateTimeFormat"/></param>
+        /// <param name="timeZone"><inheritdoc cref="TimeZone"/></param>
         /// <param name="minimumBytesToWrite"><inheritdoc cref="MinimumBytesToWrite"/></param>
-        public VoiceChatRecorder(ITalker talker, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat, int minimumBytesToWrite)
-            : this(talker, waveFormat, rootDirectoryPath, dateTimeFormat, minimumBytesToWrite, null)
+        public VoiceChatRecorder(ITalker talker, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat, string timeZone, int minimumBytesToWrite)
+            : this(talker, waveFormat, rootDirectoryPath, dateTimeFormat, timeZone, minimumBytesToWrite, null)
         {
         }
 
@@ -80,14 +95,16 @@ namespace VoiceChatManager.Core.Audio.Capture
         /// <param name="talker"><inheritdoc cref="Talker"/></param>
         /// <param name="rootDirectoryPath"><inheritdoc cref="RootDirectoryPath"/></param>
         /// <param name="dateTimeFormat"><inheritdoc cref="DateTimeFormat"/></param>
+        /// <param name="timeZone"><inheritdoc cref="TimeZone"/></param>
         /// <param name="minimumBytesToWrite"><inheritdoc cref="MinimumBytesToWrite"/></param>
         /// <param name="converter"><inheritdoc cref="Converter"/></param>
-        public VoiceChatRecorder(ITalker talker, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat, int minimumBytesToWrite, IAudioConverter converter)
+        public VoiceChatRecorder(ITalker talker, WaveFormat waveFormat, string rootDirectoryPath, string dateTimeFormat, string timeZone, int minimumBytesToWrite, IAudioConverter converter)
         {
             WaveFormat = waveFormat;
             Talker = talker;
             RootDirectoryPath = rootDirectoryPath;
             DateTimeFormat = dateTimeFormat;
+            TimeZone = timeZone;
             MinimumBytesToWrite = minimumBytesToWrite;
             Converter = converter;
         }
@@ -108,6 +125,9 @@ namespace VoiceChatManager.Core.Audio.Capture
 
         /// <inheritdoc/>
         public string DateTimeFormat { get; set; }
+
+        /// <inheritdoc/>
+        public string TimeZone { get; set; }
 
         /// <inheritdoc/>
         public int MinimumBytesToWrite { get; set; }
@@ -157,7 +177,11 @@ namespace VoiceChatManager.Core.Audio.Capture
             cancellationToken.ThrowIfCancellationRequested();
 
             if (Writer == null && Talker != null && Talker.GameObject != null)
-                Writer = new CustomWaveWriter(Path.Combine(RootDirectoryPath, $"{Talker.Nickname} ({Talker.UserId})", $"({Talker.Id}) [{Talker.Role}] {DateTime.Now.ToString(DateTimeFormat)}"), WaveFormat);
+            {
+                Writer = new CustomWaveWriter(
+                    Path.Combine(RootDirectoryPath, $"{Talker.Nickname} ({Talker.UserId})", $"({Talker.Id}) [{Talker.Role}] {DateTime.Now.FromTimeZone(TimeZone).ToString(DateTimeFormat)}"),
+                    WaveFormat);
+            }
 
             await Writer.WriteSamplesAsync(samples, cancellationToken).ConfigureAwait(false);
         }

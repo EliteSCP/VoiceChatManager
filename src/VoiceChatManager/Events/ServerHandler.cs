@@ -9,6 +9,7 @@ namespace VoiceChatManager.Events
 {
     using System;
     using System.Collections.Concurrent;
+    using System.ComponentModel;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -19,7 +20,9 @@ namespace VoiceChatManager.Events
     using Dissonance;
     using Exiled.API.Features;
     using Exiled.Events.EventArgs;
+    using Mirror;
     using NAudio.Wave;
+    using UnityEngine;
     using Xabe.FFmpeg;
     using static VoiceChatManager;
     using Log = Exiled.API.Features.Log;
@@ -29,6 +32,11 @@ namespace VoiceChatManager.Events
     /// </summary>
     internal sealed class ServerHandler
     {
+        /// <summary>
+        /// Gets the game manager.
+        /// </summary>
+        public static NetworkIdentity GameManager { get; private set; }
+
         /// <summary>
         /// Gets the actual round name.
         /// </summary>
@@ -119,6 +127,7 @@ namespace VoiceChatManager.Events
                             new WaveFormat(Instance.Config.Recorder.SampleRate, 1),
                             Path.Combine(Instance.Config.Recorder.RootDirectoryPath, RoundName),
                             Instance.Config.Recorder.DateTimeFormat,
+                            Instance.Config.Recorder.TimeZone,
                             Instance.Config.Recorder.MinimumBytesToWrite,
                             Instance.Converter);
 
@@ -163,13 +172,17 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnWaitingForPlayers"/>
         public void OnWaitingForPlayers()
         {
-            Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
+            GameManager = GameObject.Find("GameManager").GetComponent<NetworkIdentity>();
+
+            Server.Host.DisplayNickname = Instance.Config.DedicatedServerName;
 
             // It doesn't get invoked by Exiled
             if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
                 OnReloadedConfigs();
 
-            RoundName = string.Format(Instance.Translation.RoundName, DateTime.Now.ToString(Instance.Config.Recorder.DateTimeFormat));
+            RoundName = string.Format(
+                Instance.Translation.RoundName,
+                DateTime.Now.FromTimeZone(Instance.Config.Recorder.TimeZone).ToString(Instance.Config.Recorder.DateTimeFormat));
 
             if (Instance.Config.Recorder.IsEnabled && Instance.Config.Recorder.KeepLastNumberOfRounds > 0)
             {

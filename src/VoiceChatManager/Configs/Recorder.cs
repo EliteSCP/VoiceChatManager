@@ -7,6 +7,7 @@
 
 namespace VoiceChatManager.Configs
 {
+    using System;
     using System.ComponentModel;
     using System.IO;
     using Core.Audio.Capture;
@@ -45,6 +46,10 @@ namespace VoiceChatManager.Configs
         /// <inheritdoc cref="IVoiceChatRecorder.DateTimeFormat"/>
         [Description("The date time format that will be written in the file name")]
         public string DateTimeFormat { get; private set; } = "dd-MM-yy HH.mm.ss.fff";
+
+        /// <inheritdoc cref="IVoiceChatRecorder.TimeZone"/>
+        [Description("The recorder timezone. Run \"TZUTIL.EXE /L\" in the command line of your machine to get all of the timezone ids")]
+        public string TimeZone { get; private set; } = TimeZoneInfo.Local.Id;
 
         /// <inheritdoc cref="IVoiceChatRecorder.MinimumBytesToWrite"/>
         [Description("The minimum number of bytes required to write the audio, minimum is the read buffer size, 192000 bytes equals 1 second.")]
