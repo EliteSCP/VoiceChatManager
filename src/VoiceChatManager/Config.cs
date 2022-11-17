@@ -7,9 +7,11 @@
 
 namespace VoiceChatManager
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.IO;
+    using System.Linq;
     using Configs;
     using Core.Audio.Capture;
     using Exiled.API.Features;
@@ -94,6 +96,12 @@ namespace VoiceChatManager
                 volumeLimit = Mathf.Clamp(value, 0f, 100f);
             }
         }
+
+        /// <summary>
+        /// Gets the dedicated server name, showed when playing audios.
+        /// </summary>
+        [Description("The name of the dedicated server")]
+        public string DedicatedServerName { get; private set; } = "Music DJ";
 
         /// <summary>
         /// Gets the audio duration format.

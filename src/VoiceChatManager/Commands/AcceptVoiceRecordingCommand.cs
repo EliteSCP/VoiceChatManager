@@ -59,6 +59,7 @@ namespace VoiceChatManager.Commands
                     new WaveFormat(VoiceChatManager.Instance.Config.Recorder.SampleRate, 1),
                     Path.Combine(VoiceChatManager.Instance.Config.Recorder.RootDirectoryPath, VoiceChatManager.Instance.ServerHandler.RoundName),
                     VoiceChatManager.Instance.Config.Recorder.DateTimeFormat,
+                    VoiceChatManager.Instance.Config.Recorder.TimeZone,
                     VoiceChatManager.Instance.Config.Recorder.MinimumBytesToWrite,
                     VoiceChatManager.Instance.Converter);
 

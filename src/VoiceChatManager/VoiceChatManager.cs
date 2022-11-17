@@ -16,8 +16,10 @@ namespace VoiceChatManager
     using Events;
     using Exiled.API.Features;
     using HarmonyLib;
+    using MapEvents = Exiled.Events.Handlers.Map;
     using PlayerEvents = Exiled.Events.Handlers.Player;
     using ServerEvents = Exiled.Events.Handlers.Server;
+    using WarheadEvents = Exiled.Events.Handlers.Warhead;
 
     /// <summary>
     /// Plays audio files in game.
@@ -41,7 +43,7 @@ namespace VoiceChatManager
         public override string Name { get; } = "VoiceChatManager";
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion { get; } = new Version(2, 10, 0);
+        public override Version RequiredExiledVersion { get; } = new Version(5, 3, 0);
 
         /// <summary>
         /// Gets GDPR related configs.
@@ -98,14 +100,16 @@ namespace VoiceChatManager
             ServerEvents.RestartingRound += ServerHandler.OnRestartingRound;
 
             // Play on event events, OnWaitingForPlayers is invoked before this
-            Exiled.Events.Handlers.Server.RoundStarted += ServerHandler.OnRoundStarted;
-            Exiled.Events.Handlers.Map.AnnouncingNtfEntrance += ServerHandler.OnAnnouncingNtfEntrance;
-            Exiled.Events.Handlers.Server.RespawningTeam += ServerHandler.OnRespawningTeam;
-            Exiled.Events.Handlers.Warhead.Starting += ServerHandler.OnWarheadStarting;
-            Exiled.Events.Handlers.Warhead.Stopping += ServerHandler.OnWarheadStopping;
-            Exiled.Events.Handlers.Warhead.Detonated += ServerHandler.OnWarheadDetonated;
-            Exiled.Events.Handlers.Map.Decontaminating += ServerHandler.OnDecontaminating;
-            Exiled.Events.Handlers.Server.RoundEnded += ServerHandler.OnRoundEnded;
+            ServerEvents.RoundStarted += ServerHandler.OnRoundStarted;
+            ServerEvents.RoundEnded += ServerHandler.OnRoundEnded;
+            ServerEvents.RespawningTeam += ServerHandler.OnRespawningTeam;
+
+            WarheadEvents.Starting += ServerHandler.OnWarheadStarting;
+            WarheadEvents.Stopping += ServerHandler.OnWarheadStopping;
+            WarheadEvents.Detonated += ServerHandler.OnWarheadDetonated;
+
+            MapEvents.AnnouncingNtfEntrance += ServerHandler.OnAnnouncingNtfEntrance;
+            MapEvents.Decontaminating += ServerHandler.OnDecontaminating;
 
             harmonyInstance = new Harmony($"com.iopietro.voicechatmanager");
             harmonyInstance.PatchAll();
@@ -140,14 +144,16 @@ namespace VoiceChatManager
             ServerEvents.RestartingRound -= ServerHandler.OnRestartingRound;
 
             // Play on event events, OnWaitingForPlayers is invoked before this
-            Exiled.Events.Handlers.Server.RoundStarted -= ServerHandler.OnRoundStarted;
-            Exiled.Events.Handlers.Map.AnnouncingNtfEntrance -= ServerHandler.OnAnnouncingNtfEntrance;
-            Exiled.Events.Handlers.Server.RespawningTeam -= ServerHandler.OnRespawningTeam;
-            Exiled.Events.Handlers.Warhead.Starting -= ServerHandler.OnWarheadStarting;
-            Exiled.Events.Handlers.Warhead.Stopping -= ServerHandler.OnWarheadStopping;
-            Exiled.Events.Handlers.Warhead.Detonated -= ServerHandler.OnWarheadDetonated;
-            Exiled.Events.Handlers.Map.Decontaminating -= ServerHandler.OnDecontaminating;
-            Exiled.Events.Handlers.Server.RoundEnded -= ServerHandler.OnRoundEnded;
+            ServerEvents.RoundStarted -= ServerHandler.OnRoundStarted;
+            ServerEvents.RoundEnded -= ServerHandler.OnRoundEnded;
+            ServerEvents.RespawningTeam -= ServerHandler.OnRespawningTeam;
+
+            WarheadEvents.Starting -= ServerHandler.OnWarheadStarting;
+            WarheadEvents.Stopping -= ServerHandler.OnWarheadStopping;
+            WarheadEvents.Detonated -= ServerHandler.OnWarheadDetonated;
+
+            MapEvents.AnnouncingNtfEntrance -= ServerHandler.OnAnnouncingNtfEntrance;
+            MapEvents.Decontaminating -= ServerHandler.OnDecontaminating;
 
             harmonyInstance.UnpatchAll();
             harmonyInstance = null;

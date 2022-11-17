@@ -30,13 +30,13 @@ namespace VoiceChatManager.Configs
         /// Gets <see cref="AudioFile"/> played on NtfRespawn event.
         /// </summary>
         [Description("Called when the NTF are spawned:")]
-        public AudioFile NtfEntrance { get; private set; } = new AudioFile();
+        public AudioFile NtfSpawned { get; private set; } = new AudioFile();
 
         /// <summary>
         /// Gets <see cref="AudioFile"/> played on ChaosRespawn event.
         /// </summary>
         [Description("Called when the CI are spawned: (will be heard by ALL players not only ClassD and Chaos!")]
-        public AudioFile CiEntrance { get; private set; } = new AudioFile();
+        public AudioFile ChaosInsurgencySpawned { get; private set; } = new AudioFile();
 
         /// <summary>
         /// Gets <see cref="AudioFile"/> played on WarheadStart event.
@@ -48,7 +48,7 @@ namespace VoiceChatManager.Configs
         /// Gets <see cref="AudioFile"/> played on WarheadCancel event.
         /// </summary>
         [Description("Called when the Warhead is cancaled: (the default Alpha Warhead cassie WILL still play!)")]
-        public AudioFile WarheadCancel { get; private set; } = new AudioFile();
+        public AudioFile WarheadCanceled { get; private set; } = new AudioFile();
 
         /// <summary>
         /// Gets <see cref="AudioFile"/> played on WarheadDetonated event.
@@ -60,7 +60,7 @@ namespace VoiceChatManager.Configs
         /// Gets <see cref="AudioFile"/> played on DecontaminationStart event.
         /// </summary>
         [Description("Called when the Decontamination proccess has started: (the default decontamination cassie WILL still play!)")]
-        public AudioFile DecontaminationStart { get; private set; } = new AudioFile();
+        public AudioFile DecontaminationStarted { get; private set; } = new AudioFile();
 
         /// <summary>
         /// Gets <see cref="AudioFile"/> played on RoundEnded event.

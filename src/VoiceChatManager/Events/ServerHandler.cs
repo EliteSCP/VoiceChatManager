@@ -9,6 +9,7 @@ namespace VoiceChatManager.Events
 {
     using System;
     using System.Collections.Concurrent;
+    using System.ComponentModel;
     using System.IO;
     using System.Linq;
     using System.Threading;
@@ -19,7 +20,9 @@ namespace VoiceChatManager.Events
     using Dissonance;
     using Exiled.API.Features;
     using Exiled.Events.EventArgs;
+    using Mirror;
     using NAudio.Wave;
+    using UnityEngine;
     using Xabe.FFmpeg;
     using static VoiceChatManager;
     using Log = Exiled.API.Features.Log;
@@ -29,6 +32,11 @@ namespace VoiceChatManager.Events
     /// </summary>
     internal sealed class ServerHandler
     {
+        /// <summary>
+        /// Gets the game manager.
+        /// </summary>
+        public static NetworkIdentity GameManager { get; private set; }
+
         /// <summary>
         /// Gets the actual round name.
         /// </summary>
@@ -119,6 +127,7 @@ namespace VoiceChatManager.Events
                             new WaveFormat(Instance.Config.Recorder.SampleRate, 1),
                             Path.Combine(Instance.Config.Recorder.RootDirectoryPath, RoundName),
                             Instance.Config.Recorder.DateTimeFormat,
+                            Instance.Config.Recorder.TimeZone,
                             Instance.Config.Recorder.MinimumBytesToWrite,
                             Instance.Converter);
 
@@ -163,13 +172,17 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnWaitingForPlayers"/>
         public void OnWaitingForPlayers()
         {
-            Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
+            GameManager = GameObject.Find("GameManager").GetComponent<NetworkIdentity>();
+
+            Server.Host.DisplayNickname = Instance.Config.DedicatedServerName;
 
             // It doesn't get invoked by Exiled
             if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
                 OnReloadedConfigs();
 
-            RoundName = string.Format(Instance.Translation.RoundName, DateTime.Now.ToString(Instance.Config.Recorder.DateTimeFormat));
+            RoundName = string.Format(
+                Instance.Translation.RoundName,
+                DateTime.Now.FromTimeZone(Instance.Config.Recorder.TimeZone).ToString(Instance.Config.Recorder.DateTimeFormat));
 
             if (Instance.Config.Recorder.IsEnabled && Instance.Config.Recorder.KeepLastNumberOfRounds > 0)
             {
@@ -200,35 +213,26 @@ namespace VoiceChatManager.Events
         public void OnRoundStarted() => Instance.Config.PlayOnEvent.RoundStarted.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Map.OnAnnouncingNtfEntrance(AnnouncingNtfEntranceEventArgs)"/>
-        public void OnAnnouncingNtfEntrance(AnnouncingNtfEntranceEventArgs ev)
-        {
-            if (!string.IsNullOrEmpty(Instance.Config.PlayOnEvent.NtfEntrance.Name))
-            {
-                ev.IsAllowed = false;
-                Instance.Config.PlayOnEvent.NtfEntrance.Play();
-            }
-        }
+        public void OnAnnouncingNtfEntrance(AnnouncingNtfEntranceEventArgs ev) => ev.IsAllowed = !Instance.Config.PlayOnEvent.NtfSpawned.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRespawningTeam(RespawningTeamEventArgs)"/>
         public void OnRespawningTeam(RespawningTeamEventArgs ev)
         {
             if (ev.NextKnownTeam == Respawning.SpawnableTeamType.ChaosInsurgency)
-            {
-                Instance.Config.PlayOnEvent.CiEntrance.Play();
-            }
+                Instance.Config.PlayOnEvent.ChaosInsurgencySpawned.Play();
         }
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Warhead.OnStarting(StartingEventArgs)"/>
         public void OnWarheadStarting(StartingEventArgs ev) => Instance.Config.PlayOnEvent.WarheadStart.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Warhead.OnStopping(StoppingEventArgs)"/>
-        public void OnWarheadStopping(StoppingEventArgs ev) => Instance.Config.PlayOnEvent.WarheadCancel.Play();
+        public void OnWarheadStopping(StoppingEventArgs ev) => Instance.Config.PlayOnEvent.WarheadCanceled.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Warhead.OnDetonated"/>
         public void OnWarheadDetonated() => Instance.Config.PlayOnEvent.WarheadDetonated.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Map.OnDecontaminating(DecontaminatingEventArgs)"/>
-        public void OnDecontaminating(DecontaminatingEventArgs ev) => Instance.Config.PlayOnEvent.DecontaminationStart.Play();
+        public void OnDecontaminating(DecontaminatingEventArgs ev) => Instance.Config.PlayOnEvent.DecontaminationStarted.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRoundEnded(RoundEndedEventArgs)"/>
         public void OnRoundEnded(RoundEndedEventArgs ev) => Instance.Config.PlayOnEvent.RoundEnded.Play();

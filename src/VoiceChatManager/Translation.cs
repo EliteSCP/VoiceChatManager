@@ -82,9 +82,9 @@ namespace VoiceChatManager
                     "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [Player ID/Player Name/Player]" +
                     "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [X] [Y] [Z]";
 
-        public string ConvertingAudio { get; private set; } = "Converting \"{path}\"...";
+        public string ConvertingAudio { get; private set; } = "Converting \"{0}\"...";
 
-        public string FFmpegDirectoryIsNotSetUpProperlyError { get; private set; } = "Your FFmpeg directory isn't set up properly, \"path\" won't be converted and played.";
+        public string FFmpegDirectoryIsNotSetUpProperlyError { get; private set; } = "Your FFmpeg directory isn't set up properly, \"{0}\" won't be converted and played.";
 
         public string FailedToConvert { get; private set; } = "Failed to convert \"{0}\": {1}";
 

@@ -40,6 +40,12 @@ namespace VoiceChatManager.Core.Audio.Capture
         string DateTimeFormat { get; }
 
         /// <summary>
+        /// Gets the TimeZone of the <see cref="DateTime"/>.
+        /// </summary>
+        /// <remarks>Run "TZUTIL.EXE /L" in the command line of your machine to get all of the timezone ids.</remarks>
+        string TimeZone { get; }
+
+        /// <summary>
         /// Gets the minimum number of bytes required to write the audio, minimum is the read buffer size.
         /// </summary>
         int MinimumBytesToWrite { get; }
