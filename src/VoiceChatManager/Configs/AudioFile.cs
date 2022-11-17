@@ -8,6 +8,7 @@
 namespace VoiceChatManager.Configs
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using Commands;
     using Core.Extensions;
@@ -49,23 +50,35 @@ namespace VoiceChatManager.Configs
         /// <summary>
         /// Tries to play an audio.
         /// </summary>
-        public void Play()
+        /// <returns>Returns a value indicating whether the audio is being played or not.</returns>
+        public bool Play()
         {
-            if (string.IsNullOrEmpty(Name) && (!VoiceChatManager.Instance.Config.Presets.ContainsKey(Name) || !File.Exists(Name)))
-                return;
+            if (string.IsNullOrEmpty(Name))
+                return false;
 
             string channelType = ChannelType.GetChannelName();
+            List<string> arguments = new List<string>()
+            {
+                Name,
+                Volume.ToString(),
+                channelType,
+            };
 
             if (channelType == "Proximity")
             {
-                PlayCommand.Instance.Execute(new ArraySegment<string>(new string[] { Name, Volume.ToString(), "proximity", ProximityLocation.x.ToString(), ProximityLocation.y.ToString(), ProximityLocation.z.ToString() }), new ServerConsoleSender(), out string response);
-                Log.Debug(response, VoiceChatManager.Instance.Config.IsDebugEnabled);
+                arguments.AddRange(new string[]
+                {
+                    ProximityLocation.x.ToString(),
+                    ProximityLocation.y.ToString(),
+                    ProximityLocation.z.ToString(),
+                });
             }
-            else
-            {
-                PlayCommand.Instance.Execute(new ArraySegment<string>(new string[] { Name, Volume.ToString(), channelType }), new ServerConsoleSender(), out string response);
-                Log.Debug(response, VoiceChatManager.Instance.Config.IsDebugEnabled);
-            }
+
+            var isBeingPlayed = PlayCommand.Instance.Execute(new ArraySegment<string>(arguments.ToArray()), new ServerConsoleSender(), out string response);
+
+            Log.Debug(response, VoiceChatManager.Instance.Config.IsDebugEnabled);
+
+            return isBeingPlayed;
         }
     }
 }

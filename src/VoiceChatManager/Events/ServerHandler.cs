@@ -213,35 +213,26 @@ namespace VoiceChatManager.Events
         public void OnRoundStarted() => Instance.Config.PlayOnEvent.RoundStarted.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Map.OnAnnouncingNtfEntrance(AnnouncingNtfEntranceEventArgs)"/>
-        public void OnAnnouncingNtfEntrance(AnnouncingNtfEntranceEventArgs ev)
-        {
-            if (!string.IsNullOrEmpty(Instance.Config.PlayOnEvent.NtfEntrance.Name))
-            {
-                ev.IsAllowed = false;
-                Instance.Config.PlayOnEvent.NtfEntrance.Play();
-            }
-        }
+        public void OnAnnouncingNtfEntrance(AnnouncingNtfEntranceEventArgs ev) => ev.IsAllowed = !Instance.Config.PlayOnEvent.NtfSpawned.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRespawningTeam(RespawningTeamEventArgs)"/>
         public void OnRespawningTeam(RespawningTeamEventArgs ev)
         {
             if (ev.NextKnownTeam == Respawning.SpawnableTeamType.ChaosInsurgency)
-            {
-                Instance.Config.PlayOnEvent.CiEntrance.Play();
-            }
+                Instance.Config.PlayOnEvent.ChaosInsurgencySpawned.Play();
         }
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Warhead.OnStarting(StartingEventArgs)"/>
         public void OnWarheadStarting(StartingEventArgs ev) => Instance.Config.PlayOnEvent.WarheadStart.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Warhead.OnStopping(StoppingEventArgs)"/>
-        public void OnWarheadStopping(StoppingEventArgs ev) => Instance.Config.PlayOnEvent.WarheadCancel.Play();
+        public void OnWarheadStopping(StoppingEventArgs ev) => Instance.Config.PlayOnEvent.WarheadCanceled.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Warhead.OnDetonated"/>
         public void OnWarheadDetonated() => Instance.Config.PlayOnEvent.WarheadDetonated.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Map.OnDecontaminating(DecontaminatingEventArgs)"/>
-        public void OnDecontaminating(DecontaminatingEventArgs ev) => Instance.Config.PlayOnEvent.DecontaminationStart.Play();
+        public void OnDecontaminating(DecontaminatingEventArgs ev) => Instance.Config.PlayOnEvent.DecontaminationStarted.Play();
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRoundEnded(RoundEndedEventArgs)"/>
         public void OnRoundEnded(RoundEndedEventArgs ev) => Instance.Config.PlayOnEvent.RoundEnded.Play();
