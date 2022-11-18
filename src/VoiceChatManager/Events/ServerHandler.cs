@@ -174,6 +174,7 @@ namespace VoiceChatManager.Events
         {
             GameManager = GameObject.Find("GameManager").GetComponent<NetworkIdentity>();
 
+            Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
             Server.Host.DisplayNickname = Instance.Config.DedicatedServerName;
 
             // It doesn't get invoked by Exiled
