@@ -161,7 +161,7 @@ namespace VoiceChatManager.Core.Audio.Playback
 
             List.Pause();
 
-            RoomChannel = DissonanceComms.RoomChannels.Open(ChannelName, IsThreeDimensional, Priority, Volume / 100);
+            RoomChannel = DissonanceComms.RoomChannels.Open(ChannelName == "Player" ? "Proximity" : ChannelName, IsThreeDimensional, Priority, Volume / 100);
 
             elapsedTime = 0;
 

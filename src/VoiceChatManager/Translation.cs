@@ -79,7 +79,7 @@ namespace VoiceChatManager
 
         public string PlayCommandUsage { get; private set; } = "\nvoicechatmanager play [File alias/File path] [Volume (0-100)]" +
                     "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] [Channel name (SCP, Intercom, Proximity, Ghost)]" +
-                    "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [Player ID/Player Name/Player]" +
+                    "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] player [Player ID/Player Name/Player]" +
                     "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [X] [Y] [Z]";
 
         public string ConvertingAudio { get; private set; } = "Converting \"{0}\"...";

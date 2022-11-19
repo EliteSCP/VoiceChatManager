@@ -34,6 +34,11 @@ namespace VoiceChatManager.Core.Extensions
                 case "proximity":
                     return "Proximity";
 
+                case "plproximity":
+                case "playerproximity":
+                case "player":
+                    return "Player";
+
                 case "spec":
                 case "spectators":
                 case "spectator":
