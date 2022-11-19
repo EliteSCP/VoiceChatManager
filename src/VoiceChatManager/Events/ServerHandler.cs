@@ -233,7 +233,7 @@ namespace VoiceChatManager.Events
         private void InitHost()
         {
             Server.Host.Radio.Network_syncPrimaryVoicechatButton = true;
-            Server.Host.ReferenceHub.characterClassManager.CurClass = RoleType.ClassD;
+            Server.Host.ReferenceHub.characterClassManager.CurClass = RoleType.Tutorial;
             Server.Host.DisplayNickname = Instance.Config.DedicatedServerName;
             Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
 
