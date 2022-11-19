@@ -9,6 +9,7 @@ namespace VoiceChatManager.Core.Audio.Playback
 {
     using System;
     using System.IO;
+    using Assets._Scripts.Dissonance;
     using Dissonance;
     using Dissonance.Audio.Capture;
     using Enums;
@@ -62,6 +63,11 @@ namespace VoiceChatManager.Core.Audio.Playback
         /// Gets the audio <see cref="RoomChannel"/> in which the audio is being played.
         /// </summary>
         RoomChannel RoomChannel { get; }
+
+        /// <summary>
+        /// Gets the speaking flags.
+        /// </summary>
+        SpeakingFlags SpeakingFlags { get; }
 
         /// <summary>
         /// Gets the audio stream  actual progression.

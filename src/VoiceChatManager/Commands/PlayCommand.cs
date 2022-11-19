@@ -21,7 +21,7 @@ namespace VoiceChatManager.Commands
     /// <summary>
     /// Plays an audio file to everyone in the server.
     /// </summary>
-    internal class PlayCommand : ICommand
+    internal class PlayCommand : ICommand, IUsageProvider
     {
         /// <summary>
         /// Gets the command permission.
@@ -52,11 +52,14 @@ namespace VoiceChatManager.Commands
         public string Description { get; } = VoiceChatManager.Instance.Translation.PlayCommandDescription;
 
         /// <inheritdoc/>
+        public string[] Usage { get; } = { VoiceChatManager.Instance.Translation.PlayCommandUsage };
+
+        /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (arguments.Count < 2 || arguments.Count > 6 || arguments.Count == 5)
             {
-                response = VoiceChatManager.Instance.Translation.PlayCommandUsage;
+                response = Usage[0];
                 return false;
             }
 
@@ -126,7 +129,7 @@ namespace VoiceChatManager.Commands
 
             if (arguments.Count == 2 || arguments.Count == 3)
             {
-                if (path.TryPlay(volume, channelName, out streamedMicrophone))
+                if (path.TryPlay(volume, channelName, out streamedMicrophone, log: VoiceChatManager.Instance.Log))
                 {
                     response = string.Format(
                         VoiceChatManager.Instance.Translation.AudioIsPlayingInAChannel, path, volume, streamedMicrophone.ChannelName, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
@@ -141,7 +144,7 @@ namespace VoiceChatManager.Commands
                     response = string.Format(VoiceChatManager.Instance.Translation.PlayerNotFoundError, arguments.At(3));
                     return false;
                 }
-                else if (path.TryPlay(Talker.GetOrCreate(player.GameObject), volume, channelName, out streamedMicrophone))
+                else if (path.TryPlay(Talker.GetOrCreate(player.GameObject), volume, channelName, out streamedMicrophone, log: VoiceChatManager.Instance.Log))
                 {
                     response = string.Format(
                         VoiceChatManager.Instance.Translation.AudioIsPlayingNearAPlayer, path, volume, player.Nickname, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
@@ -165,7 +168,7 @@ namespace VoiceChatManager.Commands
                     response = string.Format(VoiceChatManager.Instance.Translation.InvalidCoordinateError, arguments.At(5), "z");
                     return false;
                 }
-                else if (path.TryPlay(new Vector3(x, y, z), volume, channelName, out streamedMicrophone))
+                else if (path.TryPlay(new Vector3(x, y, z), volume, channelName, out streamedMicrophone, log: VoiceChatManager.Instance.Log))
                 {
                     response = string.Format(
                         VoiceChatManager.Instance.Translation.AudioIsPlayingInAPosition, path, volume, x, y, z, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));

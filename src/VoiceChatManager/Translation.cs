@@ -79,7 +79,7 @@ namespace VoiceChatManager
 
         public string PlayCommandUsage { get; private set; } = "\nvoicechatmanager play [File alias/File path] [Volume (0-100)]" +
                     "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] [Channel name (SCP, Intercom, Proximity, Ghost)]" +
-                    "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [Player ID/Player Name/Player]" +
+                    "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] player [Player ID/Player Name/Player]" +
                     "\nvoicechatmanager play [File alias/File path] [Volume (0-100)] proximity [X] [Y] [Z]";
 
         public string ConvertingAudio { get; private set; } = "Converting \"{0}\"...";
@@ -108,7 +108,8 @@ namespace VoiceChatManager
 
         public string PauseCommandDescription { get; private set; } = "Pause an audio file from playing.";
 
-        public string PauseCommandUsage { get; private set; } = "voicechatmanager pause [Preset name/File name/File path/Audio ID]";
+        public string PauseCommandUsage { get; private set; } = "voicechatmanager pause [Preset name/File name/File path/Audio ID]" +
+            "\nvoicechatmanager pause [Preset name/File name/File path/Audio ID] [Channel name (SCP, Intercom, Proximity, Ghost)]";
 
         public string AudioNotFoundOrIsNotPlaying { get; private set; } = "Audio \"{0}\" not found or it's not playing!";
 
