@@ -25,10 +25,11 @@ An SCP: SL plugin which allows to record players' voice chat and play custom aud
 | --- | --- | --- | --- | --- |
 | vcm stop | Stops an audio file from playing. | **[Preset name/File name/File path/Audio ID]** | **voicechatmanager.stop** | **vcm stop 0** |
 | vcm play | Plays an audio file on the intercom channel. | **[File alias/File path] [Volume (0-100)]** | **voicechatmanager.play** | **vcm play C:\AmongUsMainTheme.mp3 100**|
-| vcm play | Plays an audio file on a specific channel | **[File alias/File path] [Volume (0-100)] [Channel name (SCP, Intercom, Proximity, Ghost)]** | // | **vcm play C:\AmongUsMainTheme.mp3 100 SCP** |
-| vcm play | Plays an audio file in the proximity of a specific player | **[File alias/File path] [Volume (0-100)] proximity [Player ID/Player Name/Player]** | // | **vcm play C:\Users\Example\AmongUsMainThemeBassBoosted.mp3 100 proximity iopietro** |
+| vcm play | Plays an audio file on a specific channel | **[File alias/File path] [Volume (0-100)] [Channel name (SCP, Intercom, Proximity, Player, Ghost)]** | // | **vcm play C:\AmongUsMainTheme.mp3 100 SCP** |
+| vcm play | Plays an audio file in the proximity of a specific player | **[File alias/File path] [Volume (0-100)] player [Player ID/Player Name/Player]** | // | **vcm play C:\Users\Example\AmongUsMainThemeBassBoosted.mp3 100 player iopietro** |
 | vcmp play | Plays an audio file in the proximity of a specific position. | **[File alias/File path] [Volume (0-100)] proximity [X] [Y] [Z]** | // | **vcm play C:\Users\Example\AmongUsMainThemeBassBoosted.mp3 100 proximity 100 -50 33** |
-| vcm pause | Stops an audio file from playing. | **[Preset name/File name/File path/Audio ID]** | **vcm.pause** | **vcm pause 0**
+| vcm pause | Pause an audio file from playing on the intercom channel. | **[Preset name/File name/File path/Audio ID]** | **vcm.pause** | **vcm pause 0** |
+| vcm pause | Pause an audio file from playing on a specific channel. | **[Preset name/File name/File path/Audio ID] [Channel name  (SCP, Intercom, Proximity, Player, Ghost)]** | **vcm.pause** | **vcm pause Amogus player** |
 | vcm list presets | Gets the list of audio presets. | | **vcm.list.presets** | |
 | vcm list clear | Clears the audios list. | | **vcm.list.clear** | |
 | vcm list audio | Gets the list of playing/paused/stopped audios. | | **vcm.list.audio** | |
