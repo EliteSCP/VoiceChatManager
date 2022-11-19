@@ -9,7 +9,6 @@ namespace VoiceChatManager.Configs
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using Commands;
     using Core.Extensions;
     using Exiled.API.Features;

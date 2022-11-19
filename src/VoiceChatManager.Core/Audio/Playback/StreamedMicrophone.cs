@@ -10,6 +10,7 @@ namespace VoiceChatManager.Core.Audio.Playback
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using Assets._Scripts.Dissonance;
     using Core.Logging;
     using Dissonance;
     using Dissonance.Audio.Capture;
@@ -39,7 +40,6 @@ namespace VoiceChatManager.Core.Audio.Playback
         private DissonanceComms dissonanceComms;
         private float elapsedTime;
         private bool isDisposed;
-        private ILog log;
 
         /// <summary>
         /// Finalizes an instance of the <see cref="StreamedMicrophone"/> class.
@@ -96,6 +96,9 @@ namespace VoiceChatManager.Core.Audio.Playback
         public virtual RoomChannel RoomChannel { get; private set; }
 
         /// <inheritdoc/>
+        public virtual SpeakingFlags SpeakingFlags => SpeakingFlags.IntercomAsHuman;
+
+        /// <inheritdoc/>
         public TimeSpan Duration { get; protected set; }
 
         /// <inheritdoc/>
@@ -103,6 +106,11 @@ namespace VoiceChatManager.Core.Audio.Playback
 
         /// <inheritdoc/>
         public long Size { get; protected set; }
+
+        /// <summary>
+        /// Gets the log instance.
+        /// </summary>
+        protected ILog Log { get; private set; }
 
         /// <summary>
         /// Inits the class.
@@ -122,7 +130,7 @@ namespace VoiceChatManager.Core.Audio.Playback
             Duration = Stream.GetDuration();
             Size = Stream.Length;
 
-            this.log = log;
+            Log = log;
 
             List.Add(this);
 
@@ -142,12 +150,12 @@ namespace VoiceChatManager.Core.Audio.Playback
             }
             else if (Stream == null)
             {
-                log?.Error($"Stream is null! Microphone name: \"{name}\".");
+                Log?.Error($"Stream is null! Microphone name: \"{name}\".");
                 return format;
             }
             else if (!Stream.CanRead)
             {
-                log?.Error($"Stream cannot be read! Microphone name: \"{name}\".");
+                Log?.Error($"Stream cannot be read! Microphone name: \"{name}\".");
                 return format;
             }
 
@@ -164,7 +172,9 @@ namespace VoiceChatManager.Core.Audio.Playback
             Status = CaptureStatusType.Playing;
             DissonanceComms.IsMuted = false;
 
-            log?.Debug($"Stream of duration {Stream.GetDuration():hh\\:mm\\:ss\\.ff} started. Microphone name: \"{name}\", is 3D: {(IsThreeDimensional ? "Yes" : "No")}, channel name: {ChannelName}, priority: {Priority}.");
+            ReferenceHub.HostHub.dissonanceUserSetup.NetworkspeakingFlags = SpeakingFlags;
+
+            Log?.Debug($"Stream of duration {Stream.GetDuration():hh\\:mm\\:ss\\.ff} started. Microphone name: \"{name}\", is 3D: {(IsThreeDimensional ? "Yes" : "No")}, channel name: {ChannelName}, priority: {Priority}.");
 
             return format;
         }
@@ -181,7 +191,7 @@ namespace VoiceChatManager.Core.Audio.Playback
             IsRecording = false;
             Status = CaptureStatusType.Stopped;
 
-            log?.Debug($"Stream has been stopped at {Stream.Position.GetDuration():hh\\:mm\\:ss\\.ff}.");
+            Log?.Debug($"Stream has been stopped at {Stream.Position.GetDuration():hh\\:mm\\:ss\\.ff}.");
 
             if (Stream?.CanSeek ?? false)
                 Stream.Seek(0, SeekOrigin.Begin);
@@ -199,7 +209,7 @@ namespace VoiceChatManager.Core.Audio.Playback
             IsRecording = false;
             Status = CaptureStatusType.Paused;
 
-            log?.Debug($"Stream has been paused at {Stream.Position.GetDuration():hh\\:mm\\:ss\\.ff}.");
+            Log?.Debug($"Stream has been paused at {Stream.Position.GetDuration():hh\\:mm\\:ss\\.ff}.");
         }
 
         /// <inheritdoc/>

@@ -11,12 +11,13 @@ namespace VoiceChatManager.Core.Extensions
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using Core.Audio.Capture;
     using Core.Audio.Playback;
+    using Core.Enums;
+    using Core.Logging;
     using Core.Utilities;
     using Dissonance;
-    using Enums;
     using UnityEngine;
-    using VoiceChatManager.Core.Audio.Capture;
 
     /// <summary>
     /// A set of extensions to play, pause, stop and get audio streams.
@@ -135,14 +136,16 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="volume">The audio volume (from 0 to 100).</param>
         /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The streamed microphone to be started.</param>
+        /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
+        /// <param name="log">The <see cref="ILog"/> instance.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false it's already playing or the id isn't valid.</returns>
-        public static bool TryPlay(this string id, float volume, string channelName, out IStreamedMicrophone streamedMicrophone)
+        public static bool TryPlay(this string id, float volume, string channelName, out IStreamedMicrophone streamedMicrophone, ChannelPriority priority = ChannelPriority.None, ILog log = null)
         {
             if (id.TryPlayInCache(volume, channelName, out streamedMicrophone))
                 return true;
 
             if (!id.TryGet(CaptureStatusType.Playing, out streamedMicrophone) && File.Exists(id))
-                return TryPlay(File.OpenRead(id), volume, channelName, out streamedMicrophone);
+                return TryPlay(File.OpenRead(id), volume, channelName, out streamedMicrophone, priority, log);
 
             return false;
         }
@@ -155,14 +158,16 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="volume">The audio volume (from 0 to 100).</param>
         /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The streamed microphone to be started.</param>
+        /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
+        /// <param name="log">The <see cref="ILog"/> instance.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false it's already playing or the id isn't valid.</returns>
-        public static bool TryPlay(this string id, Vector3 position, float volume, string channelName, out IStreamedMicrophone streamedMicrophone)
+        public static bool TryPlay(this string id, Vector3 position, float volume, string channelName, out IStreamedMicrophone streamedMicrophone, ChannelPriority priority = ChannelPriority.None, ILog log = null)
         {
             if (id.TryPlayInCache(volume, channelName, out streamedMicrophone))
                 return true;
 
             if (!id.TryGet(CaptureStatusType.Playing, out streamedMicrophone) && File.Exists(id))
-                return TryPlay(File.OpenRead(id), position, volume, channelName, out streamedMicrophone);
+                return TryPlay(File.OpenRead(id), position, volume, channelName, out streamedMicrophone, priority, log);
 
             return false;
         }
@@ -175,14 +180,16 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="volume">The audio volume (from 0 to 100).</param>
         /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The streamed microphone to be started.</param>
+        /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
+        /// <param name="log">The <see cref="ILog"/> instance.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false it's already playing or the id isn't valid.</returns>
-        public static bool TryPlay(this string id, ITalker player, float volume, string channelName, out IStreamedMicrophone streamedMicrophone)
+        public static bool TryPlay(this string id, ITalker player, float volume, string channelName, out IStreamedMicrophone streamedMicrophone, ChannelPriority priority = ChannelPriority.None, ILog log = null)
         {
             if (id.TryPlayInCache(volume, channelName, out streamedMicrophone))
                 return true;
 
             if (!id.TryGet(CaptureStatusType.Playing, out streamedMicrophone) && File.Exists(id))
-                return TryPlay(File.OpenRead(id), player, volume, channelName, out streamedMicrophone);
+                return TryPlay(File.OpenRead(id), player, volume, channelName, out streamedMicrophone, priority, log);
 
             return false;
         }
@@ -195,8 +202,9 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
+        /// <param name="log">The <see cref="ILog"/> instance.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false if the <see cref="Stream"/> is null.</returns>
-        public static bool TryPlay(this Stream stream, float volume, string channelName, out IStreamedMicrophone streamedMicrophone, ChannelPriority priority = ChannelPriority.None)
+        public static bool TryPlay(this Stream stream, float volume, string channelName, out IStreamedMicrophone streamedMicrophone, ChannelPriority priority = ChannelPriority.None, ILog log = null)
         {
             if (stream == null)
             {
@@ -204,7 +212,7 @@ namespace VoiceChatManager.Core.Extensions
                 return false;
             }
 
-            streamedMicrophone = CachedProperties.DissonanceComms.gameObject.AddComponent<StreamedMicrophone>().Init(stream, volume, channelName, priority);
+            streamedMicrophone = CachedProperties.DissonanceComms.gameObject.AddComponent<StreamedMicrophone>().Init(stream, volume, channelName, priority, log);
             streamedMicrophone.RestartCapture(streamedMicrophone.Name, true);
             return true;
         }
@@ -218,8 +226,9 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
+        /// <param name="log">The <see cref="ILog"/> instance.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false if the <see cref="Stream"/> is null.</returns>
-        public static bool TryPlay(this Stream stream, Vector3 position, float volume, string channelName, out IStreamedMicrophone streamedMicrophone, ChannelPriority priority = ChannelPriority.None)
+        public static bool TryPlay(this Stream stream, Vector3 position, float volume, string channelName, out IStreamedMicrophone streamedMicrophone, ChannelPriority priority = ChannelPriority.None, ILog log = null)
         {
             if (stream == null)
             {
@@ -227,7 +236,7 @@ namespace VoiceChatManager.Core.Extensions
                 return false;
             }
 
-            streamedMicrophone = CachedProperties.DissonanceComms.gameObject.AddComponent<ProximityStreamedMicrophone>().Init(position, stream, volume, channelName, priority);
+            streamedMicrophone = CachedProperties.DissonanceComms.gameObject.AddComponent<ProximityStreamedMicrophone>().Init(position, stream, volume, channelName, priority, log);
             streamedMicrophone.RestartCapture(streamedMicrophone.Name, true);
             return true;
         }
@@ -241,8 +250,9 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <param name="priority"><inheritdoc cref="IStreamedMicrophone.Priority"/></param>
+        /// <param name="log">The <see cref="ILog"/> instance.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false if the <see cref="Stream"/> is null.</returns>
-        public static bool TryPlay(this Stream stream, ITalker talker, float volume, string channelName, out IStreamedMicrophone streamedMicrophone, ChannelPriority priority = ChannelPriority.None)
+        public static bool TryPlay(this Stream stream, ITalker talker, float volume, string channelName, out IStreamedMicrophone streamedMicrophone, ChannelPriority priority = ChannelPriority.None, ILog log = null)
         {
             if (stream == null || talker == null)
             {
@@ -250,7 +260,7 @@ namespace VoiceChatManager.Core.Extensions
                 return false;
             }
 
-            streamedMicrophone = CachedProperties.DissonanceComms.gameObject.AddComponent<PlayerProximityStreamedMicrophone>().Init(talker, stream, volume, channelName, priority);
+            streamedMicrophone = CachedProperties.DissonanceComms.gameObject.AddComponent<PlayerProximityStreamedMicrophone>().Init(talker, stream, volume, channelName, priority, log);
             streamedMicrophone.RestartCapture(streamedMicrophone.Name, true);
             return true;
         }

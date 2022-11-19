@@ -8,6 +8,7 @@
 namespace VoiceChatManager.Core.Audio.Playback
 {
     using System.IO;
+    using Assets._Scripts.Dissonance;
     using Core.Enums;
     using Core.Logging;
     using Core.Utilities;
@@ -24,6 +25,9 @@ namespace VoiceChatManager.Core.Audio.Playback
 
         /// <inheritdoc/>
         public virtual ReferenceHub Dummy => ReferenceHub.HostHub;
+
+        /// <inheritdoc/>
+        public override SpeakingFlags SpeakingFlags => 0;
 
         /// <inheritdoc/>
         public override bool IsThreeDimensional { get; set; } = true;

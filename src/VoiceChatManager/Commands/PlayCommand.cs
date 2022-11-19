@@ -126,7 +126,7 @@ namespace VoiceChatManager.Commands
 
             if (arguments.Count == 2 || arguments.Count == 3)
             {
-                if (path.TryPlay(volume, channelName, out streamedMicrophone))
+                if (path.TryPlay(volume, channelName, out streamedMicrophone, log: VoiceChatManager.Instance.Log))
                 {
                     response = string.Format(
                         VoiceChatManager.Instance.Translation.AudioIsPlayingInAChannel, path, volume, streamedMicrophone.ChannelName, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
@@ -141,7 +141,7 @@ namespace VoiceChatManager.Commands
                     response = string.Format(VoiceChatManager.Instance.Translation.PlayerNotFoundError, arguments.At(3));
                     return false;
                 }
-                else if (path.TryPlay(Talker.GetOrCreate(player.GameObject), volume, channelName, out streamedMicrophone))
+                else if (path.TryPlay(Talker.GetOrCreate(player.GameObject), volume, channelName, out streamedMicrophone, log: VoiceChatManager.Instance.Log))
                 {
                     response = string.Format(
                         VoiceChatManager.Instance.Translation.AudioIsPlayingNearAPlayer, path, volume, player.Nickname, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));
@@ -165,7 +165,7 @@ namespace VoiceChatManager.Commands
                     response = string.Format(VoiceChatManager.Instance.Translation.InvalidCoordinateError, arguments.At(5), "z");
                     return false;
                 }
-                else if (path.TryPlay(new Vector3(x, y, z), volume, channelName, out streamedMicrophone))
+                else if (path.TryPlay(new Vector3(x, y, z), volume, channelName, out streamedMicrophone, log: VoiceChatManager.Instance.Log))
                 {
                     response = string.Format(
                         VoiceChatManager.Instance.Translation.AudioIsPlayingInAPosition, path, volume, x, y, z, streamedMicrophone.Duration.ToString(VoiceChatManager.Instance.Config.DurationFormat));

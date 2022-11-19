@@ -12,6 +12,7 @@ namespace VoiceChatManager
     using Configs;
     using Core.Audio.Capture;
     using Core.Extensions;
+    using Core.Logging;
     using Core.Utilities;
     using Events;
     using Exiled.API.Features;
@@ -59,6 +60,11 @@ namespace VoiceChatManager
         /// Gets the <see cref="IAudioConverter"/> instance.
         /// </summary>
         public IAudioConverter Converter { get; internal set; }
+
+        /// <summary>
+        /// Gets the <see cref="ILog"/> instance.
+        /// </summary>
+        public ILog Log { get; internal set; }
 
         /// <summary>
         /// Gets the <see cref="Capture"/> <see cref="CancellationTokenSource"/>.

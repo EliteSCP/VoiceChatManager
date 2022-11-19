@@ -9,10 +9,8 @@ namespace VoiceChatManager.Events
 {
     using System.IO;
     using Core.Audio.Capture;
-    using Exiled.API.Extensions;
     using Exiled.API.Features;
     using Exiled.Events.EventArgs;
-    using Mirror;
     using NAudio.Wave;
     using static VoiceChatManager;
 
@@ -49,10 +47,6 @@ namespace VoiceChatManager.Events
                 if (!Instance.Capture?.Recorders.TryAdd(voiceChatRecorder.Talker, voiceChatRecorder) ?? true)
                     Log.Debug(string.Format(Instance.Translation.FailedToAddPlayerError, ev.Player.Nickname, ev.Player.UserId), Instance.Config.IsDebugEnabled);
             }
-
-            ev.Player.Connection.Send(new ObjectDestroyMessage { netId = ServerHandler.GameManager.netId });
-
-            NetworkServer.SendSpawnMessage(ServerHandler.GameManager, ev.Player.Connection);
         }
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Player.OnDestroying(DestroyingEventArgs)"/>

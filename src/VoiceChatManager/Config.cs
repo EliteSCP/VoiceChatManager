@@ -7,11 +7,9 @@
 
 namespace VoiceChatManager
 {
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.IO;
-    using System.Linq;
     using Configs;
     using Core.Audio.Capture;
     using Exiled.API.Features;

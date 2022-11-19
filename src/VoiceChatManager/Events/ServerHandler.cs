@@ -9,20 +9,18 @@ namespace VoiceChatManager.Events
 {
     using System;
     using System.Collections.Concurrent;
-    using System.ComponentModel;
     using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Core.Audio.Capture;
     using Core.Audio.Playback;
+    using Core.Audio.Profiles;
     using Core.Extensions;
     using Dissonance;
     using Exiled.API.Features;
     using Exiled.Events.EventArgs;
-    using Mirror;
     using NAudio.Wave;
-    using UnityEngine;
     using Xabe.FFmpeg;
     using static VoiceChatManager;
     using Log = Exiled.API.Features.Log;
@@ -32,11 +30,6 @@ namespace VoiceChatManager.Events
     /// </summary>
     internal sealed class ServerHandler
     {
-        /// <summary>
-        /// Gets the game manager.
-        /// </summary>
-        public static NetworkIdentity GameManager { get; private set; }
-
         /// <summary>
         /// Gets the actual round name.
         /// </summary>
@@ -50,6 +43,8 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnReloadedConfigs"/>
         public void OnReloadedConfigs()
         {
+            Instance.Log = new Logging.Log(Instance.Config.IsDebugEnabled);
+
             Instance.Config.IsFFmpegInstalled = Directory.Exists(Instance.Config.FFmpegDirectoryPath);
 
             if (Instance.Config.IsFFmpegInstalled)
@@ -172,10 +167,7 @@ namespace VoiceChatManager.Events
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnWaitingForPlayers"/>
         public void OnWaitingForPlayers()
         {
-            GameManager = GameObject.Find("GameManager").GetComponent<NetworkIdentity>();
-
-            Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
-            Server.Host.DisplayNickname = Instance.Config.DedicatedServerName;
+            InitHost();
 
             // It doesn't get invoked by Exiled
             if (Exiled.Events.Events.Instance.Config.ShouldReloadConfigsAtRoundRestart)
@@ -237,5 +229,15 @@ namespace VoiceChatManager.Events
 
         /// <inheritdoc cref="Exiled.Events.Handlers.Server.OnRoundEnded(RoundEndedEventArgs)"/>
         public void OnRoundEnded(RoundEndedEventArgs ev) => Instance.Config.PlayOnEvent.RoundEnded.Play();
+
+        private void InitHost()
+        {
+            Server.Host.Radio.Network_syncPrimaryVoicechatButton = true;
+            Server.Host.ReferenceHub.characterClassManager.CurClass = RoleType.ClassD;
+            Server.Host.DisplayNickname = Instance.Config.DedicatedServerName;
+            Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
+
+            Server.Host.DissonanceUserSetup.SetProfile(new ServerHostProfile(Server.Host.DissonanceUserSetup));
+        }
     }
 }
