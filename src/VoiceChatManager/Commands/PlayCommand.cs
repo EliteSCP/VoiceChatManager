@@ -21,7 +21,7 @@ namespace VoiceChatManager.Commands
     /// <summary>
     /// Plays an audio file to everyone in the server.
     /// </summary>
-    internal class PlayCommand : ICommand
+    internal class PlayCommand : ICommand, IUsageProvider
     {
         /// <summary>
         /// Gets the command permission.
@@ -52,11 +52,14 @@ namespace VoiceChatManager.Commands
         public string Description { get; } = VoiceChatManager.Instance.Translation.PlayCommandDescription;
 
         /// <inheritdoc/>
+        public string[] Usage { get; } = { VoiceChatManager.Instance.Translation.PlayCommandUsage };
+
+        /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (arguments.Count < 2 || arguments.Count > 6 || arguments.Count == 5)
             {
-                response = VoiceChatManager.Instance.Translation.PlayCommandUsage;
+                response = Usage[0];
                 return false;
             }
 

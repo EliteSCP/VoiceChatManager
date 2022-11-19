@@ -15,7 +15,7 @@ namespace VoiceChatManager.Commands
     /// <summary>
     /// Stop an audio file from playing.
     /// </summary>
-    internal class StopCommand : ICommand
+    internal class StopCommand : ICommand, IUsageProvider
     {
         /// <summary>
         /// The command permission.
@@ -37,11 +37,14 @@ namespace VoiceChatManager.Commands
         public string Description { get; } = VoiceChatManager.Instance.Translation.StopCommandDescription;
 
         /// <inheritdoc/>
+        public string[] Usage { get; } = { VoiceChatManager.Instance.Translation.StopCommandUsage };
+
+        /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (arguments.Count < 1)
             {
-                response = VoiceChatManager.Instance.Translation.StopCommandUsage;
+                response = Usage[0];
                 return false;
             }
 
@@ -51,7 +54,8 @@ namespace VoiceChatManager.Commands
                 return false;
             }
 
-            if (arguments.At(0).TryStop(out var _) || (int.TryParse(arguments.At(0), out var id) && id.TryStop(out _)))
+            if ((arguments.Count == 2 && arguments.At(0).TryStop(arguments.At(1).GetChannelName(), out var _)) ||
+                (int.TryParse(arguments.At(0), out var id) && id.TryStop(out _)))
             {
                 response = string.Format(VoiceChatManager.Instance.Translation.AudioHasBeenStopped, arguments.At(0));
                 return true;

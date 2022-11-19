@@ -28,7 +28,10 @@ namespace VoiceChatManager.Core.Audio.Profiles
         {
             dissonanceSetup.ResetToDefault();
 
-            dissonanceSetup.EnableSpeaking(TriggerType.Proximity | TriggerType.Role | TriggerType.Intercom, RoleType.Null);
+            dissonanceSetup.EnableSpeaking(TriggerType.Proximity | TriggerType.Intercom, RoleType.Null);
+            dissonanceSetup.EnableSpeaking(TriggerType.Role, RoleType.Ghost);
+            dissonanceSetup.EnableSpeaking(TriggerType.Role, RoleType.SCP);
+
             dissonanceSetup.EnableListening(TriggerType.Proximity | TriggerType.Role | TriggerType.Intercom, RoleType.Ghost);
         }
     }

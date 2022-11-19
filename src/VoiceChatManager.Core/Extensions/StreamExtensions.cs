@@ -33,14 +33,15 @@ namespace VoiceChatManager.Core.Extensions
         public static bool TryGet(this int id, out IStreamedMicrophone streamedMicrophone) => StreamedMicrophone.List.TryGet(id, out streamedMicrophone);
 
         /// <summary>
-        /// Tries to get a streamed microphone from the <see cref="StreamedMicrophone.List"/> based on its id (preset name/file name/file path).
+        /// Tries to get a streamed microphone from the <see cref="StreamedMicrophone.List"/> based on its id (preset name/file name/file path) and its channel name.
         /// </summary>
         /// <param name="id">The streamed microphone id (preset name/file name/file path).</param>
-        /// <param name="streamedMicrophone">The streamed microphone to get.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/>.</param>
+        /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to get.</param>
         /// <returns>Returns true if the file is found, false otherwise.</returns>
-        public static bool TryGet(this string id, out IStreamedMicrophone streamedMicrophone)
+        public static bool TryGet(this string id, string channelName, out IStreamedMicrophone streamedMicrophone)
         {
-            id.TryGet(out IEnumerable<IStreamedMicrophone> streamedMicrophones);
+            id.TryGet(channelName, out IEnumerable<IStreamedMicrophone> streamedMicrophones);
 
             return (streamedMicrophone = streamedMicrophones.FirstOrDefault()) != null;
         }
@@ -49,39 +50,43 @@ namespace VoiceChatManager.Core.Extensions
         /// Tries to get the first streamed microphone from the <see cref="StreamedMicrophone.List"/> based on its id (preset name/file name/file path) and a filter.
         /// </summary>
         /// <param name="id">The streamed microphone id (preset name/file name/file path).</param>
-        /// <param name="status">The streamed microphone status.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/>.</param>
+        /// <param name="status">The <see cref="IStreamedMicrophone.Status"/>.</param>
         /// <param name="streamedMicrophone">The streamed microphone to get.</param>
         /// <returns>Returns true if the file is found, false otherwise.</returns>
-        public static bool TryGet(this string id, CaptureStatusType status, out IStreamedMicrophone streamedMicrophone)
+        public static bool TryGet(this string id, string channelName, CaptureStatusType status, out IStreamedMicrophone streamedMicrophone)
         {
-            id.TryGet(status, out IEnumerable<IStreamedMicrophone> streamedMicrophones);
+            id.TryGet(channelName, status, out IEnumerable<IStreamedMicrophone> streamedMicrophones);
 
             return (streamedMicrophone = streamedMicrophones.FirstOrDefault()) != null;
         }
 
         /// <summary>
-        /// Tries to get an <see cref="IStreamedMicrophone"/> from the <see cref="StreamedMicrophone.List"/> based on their id (preset name/file name/file path).
+        /// Tries to get an <see cref="IStreamedMicrophone"/> from the <see cref="StreamedMicrophone.List"/> based on their id (preset name/file name/file path) and their channel name.
         /// </summary>
         /// <param name="id">The streamed microphones id (preset name/file name/file path).</param>
+        /// <param name="channelName">The streamed microphones channel name.</param>
         /// <param name="streamedMicrophones">The <see cref="IStreamedMicrophone"/> to get.</param>
         /// <returns>Returns true if the file is found, false otherwise.</returns>
-        public static bool TryGet(this string id, out IEnumerable<IStreamedMicrophone> streamedMicrophones)
+        public static bool TryGet(this string id, string channelName, out IEnumerable<IStreamedMicrophone> streamedMicrophones)
         {
             return (streamedMicrophones = StreamedMicrophone.List.Where(streamedMicrophoneTemp => streamedMicrophoneTemp.Stream != null &&
             streamedMicrophoneTemp.Stream is FileStream fileStream &&
-            (fileStream.Name == id || fileStream.Name.Contains(Path.GetFileNameWithoutExtension(id))))).Any();
+            streamedMicrophoneTemp.ChannelName == channelName &&
+            (fileStream.Name == id || Path.GetFileNameWithoutExtension(fileStream.Name).Contains(Path.GetFileNameWithoutExtension(id))))).Any();
         }
 
         /// <summary>
         /// Tries to get an <see cref="IStreamedMicrophone"/> from the <see cref="StreamedMicrophone.List"/> based on their id (preset name/file name/file path) and a filter.
         /// </summary>
         /// <param name="id">The streamed microphones id (preset name/file name/file path).</param>
+        /// <param name="channelName">The streamed microphones channel name.</param>
         /// <param name="status">The streamed microphones status.</param>
         /// <param name="streamedMicrophones">The <see cref="IEnumerable{T}"/> of <see cref="IStreamedMicrophone"/> to get.</param>
         /// <returns>Returns true if the file is found, false otherwise.</returns>
-        public static bool TryGet(this string id, CaptureStatusType status, out IEnumerable<IStreamedMicrophone> streamedMicrophones)
+        public static bool TryGet(this string id, string channelName, CaptureStatusType status, out IEnumerable<IStreamedMicrophone> streamedMicrophones)
         {
-            id.TryGet(out streamedMicrophones);
+            id.TryGet(channelName, out streamedMicrophones);
 
             return (streamedMicrophones = streamedMicrophones.Where(streamedMicrophone => streamedMicrophone.Status == status)).Any();
         }
@@ -91,12 +96,12 @@ namespace VoiceChatManager.Core.Extensions
         /// </summary>
         /// <param name="id">The <see cref="IStreamedMicrophone"/> id.</param>
         /// <param name="volume">The <see cref="IStreamedMicrophone"/> volume.</param>
-        /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/> in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be played.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false otherwise.</returns>
         public static bool TryPlay(this int id, float volume, string channelName, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != CaptureStatusType.Playing)
+            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != CaptureStatusType.Playing && streamedMicrophone.ChannelName == channelName)
             {
                 streamedMicrophone.ChannelName = channelName;
                 streamedMicrophone.Volume = volume;
@@ -113,12 +118,12 @@ namespace VoiceChatManager.Core.Extensions
         /// </summary>
         /// <param name="id">The <see cref="IStreamedMicrophone"/> id (preset name/file name/file path).</param>
         /// <param name="volume">The audio volume (from 0 to 100).</param>
-        /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
-        /// <param name="streamedMicrophone">The streamed microphone to be started.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/> in which the audio is tried to be played.</param>
+        /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false it's already playing or the id isn't valid.</returns>
         public static bool TryPlayInCache(this string id, float volume, string channelName, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(CaptureStatusType.Paused, out streamedMicrophone) || id.TryGet(CaptureStatusType.Stopped, out streamedMicrophone))
+            if (id.TryGet(channelName, CaptureStatusType.Paused, out streamedMicrophone) || id.TryGet(channelName, CaptureStatusType.Stopped, out streamedMicrophone))
             {
                 streamedMicrophone.ChannelName = channelName;
                 streamedMicrophone.Volume = volume;
@@ -134,8 +139,8 @@ namespace VoiceChatManager.Core.Extensions
         /// </summary>
         /// <param name="id">The <see cref="IStreamedMicrophone"/> id (preset name/file name/file path).</param>
         /// <param name="volume">The audio volume (from 0 to 100).</param>
-        /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
-        /// <param name="streamedMicrophone">The streamed microphone to be started.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/> in which the audio is tried to be played.</param>
+        /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
         /// <param name="log">The <see cref="ILog"/> instance.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false it's already playing or the id isn't valid.</returns>
@@ -144,7 +149,7 @@ namespace VoiceChatManager.Core.Extensions
             if (id.TryPlayInCache(volume, channelName, out streamedMicrophone))
                 return true;
 
-            if (!id.TryGet(CaptureStatusType.Playing, out streamedMicrophone) && File.Exists(id))
+            if (!id.TryGet(channelName, CaptureStatusType.Playing, out streamedMicrophone) && File.Exists(id))
                 return TryPlay(File.OpenRead(id), volume, channelName, out streamedMicrophone, priority, log);
 
             return false;
@@ -156,8 +161,8 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="id">The <see cref="IStreamedMicrophone"/> id (preset name/file name/file path).</param>
         /// <param name="position">The <see cref="IStreamedMicrophone"/> proximity position.</param>
         /// <param name="volume">The audio volume (from 0 to 100).</param>
-        /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
-        /// <param name="streamedMicrophone">The streamed microphone to be started.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/> in which the audio is tried to be played.</param>
+        /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
         /// <param name="log">The <see cref="ILog"/> instance.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false it's already playing or the id isn't valid.</returns>
@@ -166,7 +171,7 @@ namespace VoiceChatManager.Core.Extensions
             if (id.TryPlayInCache(volume, channelName, out streamedMicrophone))
                 return true;
 
-            if (!id.TryGet(CaptureStatusType.Playing, out streamedMicrophone) && File.Exists(id))
+            if (!id.TryGet(channelName, CaptureStatusType.Playing, out streamedMicrophone) && File.Exists(id))
                 return TryPlay(File.OpenRead(id), position, volume, channelName, out streamedMicrophone, priority, log);
 
             return false;
@@ -178,8 +183,8 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="id">The <see cref="IStreamedMicrophone"/> id (preset name/file name/file path).</param>
         /// <param name="player">The <see cref="ITalker"/> to play the <see cref="IStreamedMicrophone"/> at.</param>
         /// <param name="volume">The audio volume (from 0 to 100).</param>
-        /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
-        /// <param name="streamedMicrophone">The streamed microphone to be started.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/> in which the audio is tried to be played.</param>
+        /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
         /// <param name="log">The <see cref="ILog"/> instance.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> started to capture the audio, false it's already playing or the id isn't valid.</returns>
@@ -188,7 +193,7 @@ namespace VoiceChatManager.Core.Extensions
             if (id.TryPlayInCache(volume, channelName, out streamedMicrophone))
                 return true;
 
-            if (!id.TryGet(CaptureStatusType.Playing, out streamedMicrophone) && File.Exists(id))
+            if (!id.TryGet(channelName, CaptureStatusType.Playing, out streamedMicrophone) && File.Exists(id))
                 return TryPlay(File.OpenRead(id), player, volume, channelName, out streamedMicrophone, priority, log);
 
             return false;
@@ -199,7 +204,7 @@ namespace VoiceChatManager.Core.Extensions
         /// </summary>
         /// <param name="stream">The <see cref="Stream"/> to be played.</param>
         /// <param name="volume">The audio volume (from 0 to 100).</param>
-        /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/> in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
         /// <param name="log">The <see cref="ILog"/> instance.</param>
@@ -223,7 +228,7 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="stream">The <see cref="Stream"/> to be played.</param>
         /// <param name="position">The <see cref="IStreamedMicrophone"/> proximity position.</param>
         /// <param name="volume">The audio volume (from 0 to 100).</param>
-        /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/> in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <param name="priority">The audio <see cref="ChannelPriority"/>.</param>
         /// <param name="log">The <see cref="ILog"/> instance.</param>
@@ -247,7 +252,7 @@ namespace VoiceChatManager.Core.Extensions
         /// <param name="stream">The <see cref="Stream"/> to be played.</param>
         /// <param name="talker">The <see cref="ITalker"/> to play the <see cref="IStreamedMicrophone"/> at.</param>
         /// <param name="volume">The audio volume (from 0 to 100).</param>
-        /// <param name="channelName">The channel name in which the audio is tried to be played.</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/> in which the audio is tried to be played.</param>
         /// <param name="streamedMicrophone">The <see cref="IStreamedMicrophone"/> to be started.</param>
         /// <param name="priority"><inheritdoc cref="IStreamedMicrophone.Priority"/></param>
         /// <param name="log">The <see cref="ILog"/> instance.</param>
@@ -287,11 +292,12 @@ namespace VoiceChatManager.Core.Extensions
         /// Stops an <see cref="IStreamedMicrophone"/>, resetting its progression back to the beginning.
         /// </summary>
         /// <param name="id">The <see cref="IStreamedMicrophone"/> id (file name/preset name/file path).</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/>.</param>
         /// <param name="streamedMicrophone">The stopped <see cref="IStreamedMicrophone"/>.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> stopped from capturing the audio, false otherwise.</returns>
-        public static bool TryStop(this string id, out IStreamedMicrophone streamedMicrophone)
+        public static bool TryStop(this string id, string channelName, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status != CaptureStatusType.Stopped)
+            if (id.TryGet(channelName, out streamedMicrophone) && streamedMicrophone.Status != CaptureStatusType.Stopped)
             {
                 streamedMicrophone.StopCapture();
                 return true;
@@ -341,14 +347,15 @@ namespace VoiceChatManager.Core.Extensions
         }
 
         /// <summary>
-        /// pauses an <see cref="IStreamedMicrophone"/> from capturing.
+        /// Pauses an <see cref="IStreamedMicrophone"/> from capturing.
         /// </summary>
         /// <param name="id">The <see cref="IStreamedMicrophone"/> id (file name/preset name/file path).</param>
+        /// <param name="channelName">The <see cref="IStreamedMicrophone.ChannelName"/> in which the audio is being played.</param>
         /// <param name="streamedMicrophone">The paused <see cref="IStreamedMicrophone"/>.</param>
         /// <returns>Returns true if the <see cref="IStreamedMicrophone"/> paused from capturing the audio, false otherwise.</returns>
-        public static bool TryPause(this string id, out IStreamedMicrophone streamedMicrophone)
+        public static bool TryPause(this string id, string channelName, out IStreamedMicrophone streamedMicrophone)
         {
-            if (id.TryGet(out streamedMicrophone) && streamedMicrophone.Status == CaptureStatusType.Playing)
+            if (id.TryGet(channelName, out streamedMicrophone) && streamedMicrophone.Status == CaptureStatusType.Playing)
             {
                 streamedMicrophone.PauseCapture();
                 return true;

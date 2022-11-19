@@ -15,7 +15,7 @@ namespace VoiceChatManager.Commands
     /// <summary>
     /// Stop an audio file from playing.
     /// </summary>
-    internal class PauseCommand : ICommand
+    internal class PauseCommand : ICommand, IUsageProvider
     {
         /// <summary>
         /// The command permission.
@@ -37,13 +37,18 @@ namespace VoiceChatManager.Commands
         public string Description { get; } = VoiceChatManager.Instance.Translation.PauseCommandDescription;
 
         /// <inheritdoc/>
+        public string[] Usage { get; } = { VoiceChatManager.Instance.Translation.PauseCommandUsage };
+
+        /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             if (arguments.Count < 1)
             {
-                response = VoiceChatManager.Instance.Translation.PauseCommandUsage;
+                response = Usage[0];
                 return false;
             }
+
+            var channelName = arguments.Count == 1 ? "Intercom" : arguments.At(1).GetChannelName();
 
             if (!sender.CheckPermission(Permission))
             {
@@ -51,7 +56,7 @@ namespace VoiceChatManager.Commands
                 return false;
             }
 
-            if (arguments.At(0).TryPause(out var streamedMicrophone) || (int.TryParse(arguments.At(0), out var id) && id.TryPause(out streamedMicrophone)))
+            if (arguments.At(0).TryPause(channelName, out var streamedMicrophone) || (int.TryParse(arguments.At(0), out var id) && id.TryPause(out streamedMicrophone)))
             {
                 response = string.Format(VoiceChatManager.Instance.Translation.AudioHasBeenPaused, arguments.At(0), streamedMicrophone.Progression.ToString(VoiceChatManager.Instance.Config.DurationFormat), Math.Round(streamedMicrophone.Stream.Position / (float)streamedMicrophone.Stream.Length * 100f, 1));
                 return true;

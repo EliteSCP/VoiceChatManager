@@ -108,7 +108,8 @@ namespace VoiceChatManager
 
         public string PauseCommandDescription { get; private set; } = "Pause an audio file from playing.";
 
-        public string PauseCommandUsage { get; private set; } = "voicechatmanager pause [Preset name/File name/File path/Audio ID]";
+        public string PauseCommandUsage { get; private set; } = "voicechatmanager pause [Preset name/File name/File path/Audio ID]" +
+            "\nvoicechatmanager pause [Preset name/File name/File path/Audio ID] [Channel name (SCP, Intercom, Proximity, Ghost)]";
 
         public string AudioNotFoundOrIsNotPlaying { get; private set; } = "Audio \"{0}\" not found or it's not playing!";
 
