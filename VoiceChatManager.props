@@ -10,7 +10,7 @@
 
   <PropertyGroup>  
     <Authors>iopietro and Michal78900</Authors>
-    <Version>1.3.2-beta</Version>
+    <Version>1.3.3-beta</Version>
     <Copyright>Copyright © $(Authors) 2021-$([System.DateTime]::Now.Year)</Copyright>
     <RepositoryType>Git</RepositoryType>
     <RepositoryUrl>https://github.com/iopietro/VoiceChatManager</RepositoryUrl>
