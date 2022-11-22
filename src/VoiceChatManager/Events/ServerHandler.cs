@@ -21,6 +21,7 @@ namespace VoiceChatManager.Events
     using Exiled.API.Features;
     using Exiled.Events.EventArgs;
     using NAudio.Wave;
+    using UnityEngine;
     using Xabe.FFmpeg;
     using static VoiceChatManager;
     using Log = Exiled.API.Features.Log;
@@ -235,6 +236,7 @@ namespace VoiceChatManager.Events
             Server.Host.Radio.Network_syncPrimaryVoicechatButton = true;
             Server.Host.ReferenceHub.characterClassManager.CurClass = RoleType.Tutorial;
             Server.Host.IsGodModeEnabled = true;
+            Server.Host.Scale = Vector3.zero;
             Server.Host.DisplayNickname = Instance.Config.DedicatedServerName;
             Server.Host.GameObject.AddComponent<VoiceReceiptTrigger>().RoomName = "SCP";
 
